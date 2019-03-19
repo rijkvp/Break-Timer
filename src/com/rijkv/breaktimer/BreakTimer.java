@@ -25,6 +25,7 @@ public class BreakTimer {
 	private Countdown countdown = new Countdown();
 	
 	private Settings settings = new Settings("Settings");
+	//private Break break = new Break("Break");
 	
 	public BreakTimer(String title)
 	{

@@ -17,13 +17,17 @@ public class Countdown {
 	private int countdown;
 	private JLabel currentLabel;
 	
+	private Break breakWindow = new Break("Break");
+	
 	public Countdown() {
 		
 	}
+	
 	public void SetLabel(JLabel label)
 	{
 		currentLabel = label;
 	}
+	
 	private void Display()
 	{
 		switch(state)
@@ -38,14 +42,15 @@ public class Countdown {
 				break;
 		
 		}
-		
 	}
+	
 	public void Setup()
 	{
 		state = CountdownState.Countdown;
 		countdown = Settings.getTimeBetweenBreak();
 		Start();
 	}
+	
 	private void Start()
 	{
 		int delay = 1000;
@@ -59,11 +64,14 @@ public class Countdown {
                     time.purge();
                 } else {
                 	countdown--;
+                	if (state == CountdownState.Break)
+                		breakWindow.SetTime(countdown);
                 }
                 Display();
             }
         }, delay, period);
 	}
+	
 	private void Switch()
 	{
 		switch(state)
@@ -71,10 +79,13 @@ public class Countdown {
 			case Break:
 				state = CountdownState.Countdown;
 				countdown = Settings.getTimeBetweenBreak();
+				breakWindow.Close();
 				break;
 			case Countdown:
 				state = CountdownState.Break;
 				countdown = Settings.getBreakDuration();
+				breakWindow.Open();
+				breakWindow.SetTime(countdown);
 				break;
 			default:
 				break;

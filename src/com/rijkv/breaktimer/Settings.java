@@ -8,7 +8,6 @@ import java.util.prefs.Preferences;
 
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
-import javax.swing.text.PlainDocument;
 
 public class Settings {
 	
@@ -86,6 +85,10 @@ public class Settings {
 	public static int getBreakDuration()
 	{
 		return Integer.parseInt(prefs.get(BREAK_DURATION_NAME, "0"));
+	}
+	public static String getBreakSoundPath()
+	{
+		return "C:\\Users\\rijkv\\Downloads\\Explosion.wav";
 	}
 	private void Load()
 	{
