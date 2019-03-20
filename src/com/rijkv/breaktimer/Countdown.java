@@ -17,7 +17,7 @@ public class Countdown {
 	private int countdown;
 	private JLabel currentLabel;
 	
-	private Break breakWindow = new Break("Break");
+	private Break breakWindow = new Break("Break", this);
 	
 	public Countdown() {
 		
@@ -33,14 +33,13 @@ public class Countdown {
 		switch(state)
 		{
 			case Break:
-				currentLabel.setText("IN BREAK: " + Integer.toString(countdown));
+				currentLabel.setText("In Break: " + Integer.toString(countdown) + "s");
 				break;
 			case Countdown:
-				currentLabel.setText("BREAK OVER: " + Integer.toString(countdown));
+				currentLabel.setText("Break over: " + Integer.toString(countdown) + "s");
 				break;
 			default:
 				break;
-		
 		}
 	}
 	
@@ -58,12 +57,13 @@ public class Countdown {
         final Timer time = new Timer();
         time.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                if (countdown == 1) {
+                if (countdown == 0) {
                     Switch();
                     time.cancel();
                     time.purge();
                 } else {
                 	countdown--;
+                	Display();
                 	if (state == CountdownState.Break)
                 		breakWindow.SetTime(countdown);
                 }
@@ -71,7 +71,14 @@ public class Countdown {
             }
         }, delay, period);
 	}
-	
+	public void BreakNow()
+	{
+		countdown = 0;
+	}
+	public void ForceStop()
+	{
+		countdown = 0;
+	}
 	private void Switch()
 	{
 		switch(state)
