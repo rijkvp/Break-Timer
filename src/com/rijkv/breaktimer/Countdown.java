@@ -27,6 +27,10 @@ public class Countdown {
 	{
 		currentLabel = label;
 	}
+	public boolean CanSkip()
+	{
+		return (countdown < Settings.getBreakDuration() - Settings.getSkipTime());
+	}
 	
 	private void Display()
 	{

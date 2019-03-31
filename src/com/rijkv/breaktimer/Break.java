@@ -77,7 +77,8 @@ public class Break {
 	}
 	private void ForceStop()
 	{
-		refCountdown.ForceStop();
+		if (refCountdown.CanSkip())
+			refCountdown.ForceStop();
 	}
 	public void SetTime(int time)
 	{
