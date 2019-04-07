@@ -2,7 +2,7 @@ package com.rijkv.breaktimer;
 
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
+import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 
-public class Break {
+public class Break implements Runnable {
 	
 	private JFrame breakFrame;
 	private JPanel contentPanel;
@@ -25,6 +25,12 @@ public class Break {
 	private Color textColor = Color.WHITE;
 	
 	private Countdown refCountdown;
+	
+	private boolean isOpen = false;
+	
+	private boolean escPressed = false;
+	private boolean ctrlPressed = false;
+	private boolean shiftPressed = false;
 	
 	public Break(String title, Countdown countdown) {
 		refCountdown = countdown;		
@@ -51,8 +57,18 @@ public class Break {
         breakFrame = new JFrame(title);
 		breakFrame.add(contentPanel);
 		breakFrame.setSize(600, 400);
+		
 		breakFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
+		// Always on top 
+		int sta = breakFrame.getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL;
+		breakFrame.setExtendedState(sta);
 		breakFrame.setAlwaysOnTop(true);
+		breakFrame.toFront();
+		breakFrame.requestFocus();
+		
+		//breakFrame.setAlwaysOnTop(false);
+		
 		breakFrame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		breakFrame.setUndecorated(true);
 		
@@ -65,9 +81,17 @@ public class Break {
 
 	        @Override
 	        public void keyPressed(KeyEvent e) {
-	            if (e.getKeyCode() == 127)
+	        	if (e.getKeyCode() == KeyEvent.VK_SHIFT)
 	            {
-	            	ForceStop();
+	            	shiftPressed = true;
+	            }
+	            if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+	            {
+	            	escPressed = true;
+	            }
+	            if (e.getKeyCode() == KeyEvent.VK_CONTROL)
+	            {
+	            	ctrlPressed = true;
 	            }
 	        }
 
@@ -86,16 +110,74 @@ public class Break {
 	}
 	public void Open()
 	{
-		breakFrame.setVisible(true);
-		//final Runnable runnable =
-		//	     (Runnable) Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.exclamation");
-		//	if (runnable != null) runnable.run();
+		escPressed = false;
+		ctrlPressed = false;
+		shiftPressed = false;
 		
+		breakFrame.setVisible(true);
+		isOpen = true;
+		new Thread(this).start();
 	}
-	
+	public void run() {
+	    try {
+	        //this.terminal.getParentFrame().setAlwaysOnTop(true);
+	        //this.terminal.getParentFrame().setDefaultCloseOperation(0);
+	        kill("explorer.exe"); // Kill explorer
+	        
+	        Robot robot = new Robot();
+	        int i = 0;
+	        while (isOpen) {
+	        	if (ctrlPressed && escPressed && shiftPressed)
+	            {
+	            	ForceStop();
+	            }
+	           sleep(30L);
+	           focus();
+	           releaseKeys(robot);
+	           sleep(15L);
+	           focus();
+	           if (i++ % 10 == 0) {
+	               kill("taskmgr.exe");
+	           }
+	           focus();
+	           releaseKeys(robot);
+	        }
+	        Runtime.getRuntime().exec("explorer.exe"); // Restart explorer
+	    } catch (Exception e) {
+	    	System.out.println(e.toString());
+	    }
+	}
 	@SuppressWarnings("deprecation")
 	public void Close()
 	{
+		isOpen = false;
 		breakFrame.hide();
 	}
+	 private void releaseKeys(Robot robot) {
+	    robot.keyRelease(17);
+	    robot.keyRelease(18);
+	    robot.keyRelease(127);
+	    robot.keyRelease(524);
+	    robot.keyRelease(9);
+	  }
+	
+	  private void sleep(long millis) {
+	    try {
+	      Thread.sleep(millis);
+	    } catch (Exception e) {
+	
+	    }
+	  }
+	
+	  private void kill(String string) {
+	    try {
+	      Runtime.getRuntime().exec("taskkill /F /IM " + string).waitFor();
+	    } catch (Exception e) {
+	    }
+	  }
+	
+	  private void focus() {
+	  //  this.frame.grabFocus();
+	    this.breakFrame.requestFocus();
+	  }
 }
