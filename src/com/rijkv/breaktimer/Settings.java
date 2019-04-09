@@ -18,6 +18,11 @@ public class Settings {
 	private JPanel contentPanel;
 	private JPanel panel;
 	private JButton saveButton;
+	private JButton bgButton;
+	private JButton fgButton;
+	
+	private Color bgColor = Color.BLACK;
+	private Color fgColor = Color.WHITE;
 	
 	private JFormattedTextField timeTextField;
 	private JFormattedTextField durationTextField;
@@ -28,12 +33,18 @@ public class Settings {
 	final static String TIME_BETWEEN_BREAK_NAME = "time_between_break";
 	final static String BREAK_DURATION_NAME = "break_duration";
 	final static String SKIP_TIME = "skip_time";
+	final static String BG_COLOR = "bg_color";
+	final static String FG_COLOR = "fg_color";
 	
-	public Settings(String title) {
+	void SetupPrefs()
+	{
 		sun.util.logging.PlatformLogger platformLogger = sun.util.logging.PlatformLogger.getLogger("java.util.prefs");
 		platformLogger.setLevel(sun.util.logging.PlatformLogger.Level.OFF);
 		
 		prefs = Preferences.userNodeForPackage(com.rijkv.breaktimer.Settings.class);
+	}
+	public Settings(String title) {
+		SetupPrefs();
 		
 		contentPanel = new JPanel();
 		
@@ -53,6 +64,34 @@ public class Settings {
         skipTimeTextField = new JFormattedTextField();
         panel.add(skipTimeTextField);
         
+        bgButton = new JButton("Select background color");
+        bgButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				bgColor = JColorChooser.showDialog( settingsFrame,
+	                       "Choose background color", bgColor );
+	   
+	                 if (bgColor == null )
+	                	 bgColor = Color.black;
+			}
+        });
+        panel.add(bgButton);
+        
+        fgButton = new JButton("Select foreground color");
+        fgButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				fgColor = JColorChooser.showDialog( settingsFrame,
+	                       "Choose foreground color", fgColor );
+	   
+	                 if (fgColor == null )
+	                	 fgColor = Color.white;
+			}
+        });
+        panel.add(fgButton);
+        
         saveButton = new JButton("Save & Close");
         saveButton.addActionListener(new ActionListener()
         {
@@ -66,7 +105,7 @@ public class Settings {
 		settingsFrame = new JFrame(title);
 		
 		settingsFrame.add(contentPanel);
-		settingsFrame.setSize(300, 300);
+		settingsFrame.setSize(300, 400);
 		settingsFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		Load();
 	}
@@ -77,6 +116,14 @@ public class Settings {
 	public static int getTimeBetweenBreak()
 	{
 		return Integer.parseInt(prefs.get(TIME_BETWEEN_BREAK_NAME, "0"));
+	}
+	public static Color getFGColor()
+	{
+		return Color.decode(prefs.get(FG_COLOR, "-1"));
+	}
+	public static Color getBGColor()
+	{
+		return Color.decode(prefs.get(BG_COLOR, "-1"));
 	}
 	public static int getSkipTime()
 	{
@@ -91,6 +138,8 @@ public class Settings {
 		timeTextField.setText(prefs.get(TIME_BETWEEN_BREAK_NAME, "0"));
 		durationTextField.setText(prefs.get(BREAK_DURATION_NAME, "0"));
 		skipTimeTextField.setText(prefs.get(SKIP_TIME, "0"));
+		bgColor = Color.decode(prefs.get(BG_COLOR, "-1"));
+		fgColor = Color.decode(prefs.get(FG_COLOR, "-1"));
 	}
 	@SuppressWarnings("deprecation")
 	private void Save()
@@ -116,6 +165,8 @@ public class Settings {
 		} else {
 			return;
 		}
+		prefs.put(BG_COLOR, String.valueOf(bgColor.getRGB()));
+		prefs.put(FG_COLOR, String.valueOf(fgColor.getRGB()));
 	  	settingsFrame.hide();
 	}
 	public static boolean isNumeric(String str) { 

@@ -35,6 +35,9 @@ public class Break implements Runnable {
 	public Break(String title, Countdown countdown) {
 		refCountdown = countdown;		
 		
+		bgColor = Settings.getBGColor();
+		textColor = Settings.getFGColor();
+		
 		contentPanel = new JPanel();
 		contentPanel.setBounds(0, 400, 400, 400);
 		
@@ -43,6 +46,9 @@ public class Break implements Runnable {
 		gridLayout.setVgap(10);
         panel.setLayout(gridLayout);
         contentPanel.add(panel);
+        
+        bgColor = Settings.getBGColor();
+		textColor = Settings.getFGColor();
         
         label = new JLabel("Break", SwingConstants.CENTER);
         label.setFont(label.getFont ().deriveFont (128.0f));
@@ -66,8 +72,6 @@ public class Break implements Runnable {
 		breakFrame.setAlwaysOnTop(true);
 		breakFrame.toFront();
 		breakFrame.requestFocus();
-		
-		//breakFrame.setAlwaysOnTop(false);
 		
 		breakFrame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		breakFrame.setUndecorated(true);
@@ -114,14 +118,19 @@ public class Break implements Runnable {
 		ctrlPressed = false;
 		shiftPressed = false;
 		
+		bgColor = Settings.getBGColor();
+		textColor = Settings.getFGColor();
+		label.setForeground(textColor);
+		timeLabel.setForeground(textColor);
+		panel.setBackground(bgColor);
+		contentPanel.setBackground(bgColor);
+		
 		breakFrame.setVisible(true);
 		isOpen = true;
 		new Thread(this).start();
 	}
 	public void run() {
 	    try {
-	        //this.terminal.getParentFrame().setAlwaysOnTop(true);
-	        //this.terminal.getParentFrame().setDefaultCloseOperation(0);
 	        kill("explorer.exe"); // Kill explorer
 	        
 	        Robot robot = new Robot();

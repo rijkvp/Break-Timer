@@ -23,9 +23,11 @@ public class BreakTimer {
 	
 	private JLabel timeLabel;
 	
+	private Settings settings = new Settings("Settings");
+	
 	private Countdown countdown = new Countdown();
 	
-	private Settings settings = new Settings("Settings");
+	
 	
 	public BreakTimer(String title)
 	{
