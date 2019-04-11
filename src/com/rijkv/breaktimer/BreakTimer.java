@@ -3,6 +3,7 @@ package com.rijkv.breaktimer;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -87,10 +88,21 @@ public class BreakTimer {
         countdown.SetLabel(timeLabel);
 	}
 	public static void main(String[] args) {
-		BreakTimer breakTimer = new BreakTimer("Break Timer");
-		breakTimer.SetSystemUILook();
+		BreakTimer.SetSystemUILook();
+		if (Arrays.stream(args).anyMatch("startup"::equals))
+		{
+			BreakTimer breakTimer = new BreakTimer("Break Timer [STARTUP]");
+			breakTimer.Hide();
+		} else {
+			BreakTimer breakTimer = new BreakTimer("Break Timer");
+		}
 	}
-	public void SetSystemUILook()
+	@SuppressWarnings("deprecation")
+	public void Hide()
+	{
+		mainFrame.hide();
+	}
+	public static void SetSystemUILook()
 	{
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
