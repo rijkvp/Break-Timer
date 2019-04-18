@@ -4,6 +4,7 @@ import java.util.TimerTask;
 
 import javax.swing.JLabel;
 
+import java.time.*;
 import java.util.Timer;
 
 enum CountdownState
@@ -68,10 +69,10 @@ public class Countdown {
                 } else {
                 	countdown--;
                 	Display();
+                	CheckTime();
                 	if (state == CountdownState.Break)
                 		breakWindow.SetTime(countdown);
                 }
-                Display();
             }
         }, delay, period);
 	}
@@ -82,6 +83,19 @@ public class Countdown {
 	public void ForceStop()
 	{
 		countdown = 0;
+	}
+	private void CheckTime()
+	{
+		// Test values for now:
+		LocalTime start = LocalTime.parse( "10:00:00" );
+		LocalTime stop = LocalTime.parse( "19:15:00" );	
+		
+		Boolean inRange = (LocalTime.now().isAfter(start) && LocalTime.now().isBefore(stop));
+		
+		if(!inRange)
+		{
+			System.exit(0);
+		}
 	}
 	private void Switch()
 	{
