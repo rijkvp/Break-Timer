@@ -69,7 +69,6 @@ public class Countdown {
                 } else {
                 	countdown--;
                 	Display();
-                	CheckTime();
                 	if (state == CountdownState.Break)
                 		breakWindow.SetTime(countdown);
                 }
@@ -84,19 +83,21 @@ public class Countdown {
 	{
 		countdown = 0;
 	}
-	private void CheckTime()
+	private boolean CheckTime()
 	{
 		// Test values for now:
-		LocalTime start = LocalTime.parse( "10:00:00" );
+		LocalTime start = LocalTime.parse( "09:30:00" );
 		LocalTime stop = LocalTime.parse( "19:15:00" );	
 		
 		Boolean inRange = (LocalTime.now().isAfter(start) && LocalTime.now().isBefore(stop));
 		
 		if(!inRange)
 		{
-			System.exit(0);
+			return false;
 		}
+		return true;
 	}
+	
 	private void Switch()
 	{
 		switch(state)
@@ -107,10 +108,16 @@ public class Countdown {
 				breakWindow.Close();
 				break;
 			case Countdown:
-				state = CountdownState.Break;
-				countdown = Settings.getBreakDuration();
-				breakWindow.Open();
-				breakWindow.SetTime(countdown);
+				if (CheckTime()) {
+					state = CountdownState.Break;
+					countdown = Settings.getBreakDuration();
+					breakWindow.Open();
+					breakWindow.SetTime(countdown);
+				} else {
+					state = CountdownState.Countdown;
+					countdown = Settings.getTimeBetweenBreak();
+					breakWindow.Close();
+				}
 				break;
 			default:
 				break;
