@@ -27,6 +27,7 @@ public class Settings {
 	private JFormattedTextField timeTextField;
 	private JFormattedTextField durationTextField;
 	private JFormattedTextField skipTimeTextField;
+	private JFormattedTextField timeRangeTextField;
 	
 	static Preferences prefs;
 
@@ -35,6 +36,7 @@ public class Settings {
 	final static String SKIP_TIME = "skip_time";
 	final static String BG_COLOR = "bg_color";
 	final static String FG_COLOR = "fg_color";
+	final static String TIME_RANGE = "time_range";
 	
 	void SetupPrefs()
 	{
@@ -63,6 +65,9 @@ public class Settings {
         ShowLabel("Skip time");
         skipTimeTextField = new JFormattedTextField();
         panel.add(skipTimeTextField);
+        ShowLabel("Time Range");
+        timeRangeTextField = new JFormattedTextField();
+        panel.add(timeRangeTextField);
         
         bgButton = new JButton("Select background color");
         bgButton.addActionListener(new ActionListener() {
@@ -129,6 +134,11 @@ public class Settings {
 	{
 		return Integer.parseInt(prefs.get(SKIP_TIME, "0"));
 	}
+	public static String getTimeRange()
+	{
+		return prefs.get(TIME_RANGE, "00:00:00-23:59:59");
+	}
+	
 	public static int getBreakDuration()
 	{
 		return Integer.parseInt(prefs.get(BREAK_DURATION_NAME, "0"));
@@ -138,6 +148,7 @@ public class Settings {
 		timeTextField.setText(prefs.get(TIME_BETWEEN_BREAK_NAME, "0"));
 		durationTextField.setText(prefs.get(BREAK_DURATION_NAME, "0"));
 		skipTimeTextField.setText(prefs.get(SKIP_TIME, "0"));
+		timeRangeTextField.setText(prefs.get(TIME_RANGE, "-"));
 		bgColor = Color.decode(prefs.get(BG_COLOR, "-1"));
 		fgColor = Color.decode(prefs.get(FG_COLOR, "-1"));
 	}
@@ -157,7 +168,6 @@ public class Settings {
 		{
 			prefs.put(BREAK_DURATION_NAME, value2);
 		} else {
-			return;
 		}
 		if (isNumeric(value3))
 		{
@@ -165,6 +175,7 @@ public class Settings {
 		} else {
 			return;
 		}
+		prefs.put(TIME_RANGE, timeRangeTextField.getText());
 		prefs.put(BG_COLOR, String.valueOf(bgColor.getRGB()));
 		prefs.put(FG_COLOR, String.valueOf(fgColor.getRGB()));
 	  	settingsFrame.hide();

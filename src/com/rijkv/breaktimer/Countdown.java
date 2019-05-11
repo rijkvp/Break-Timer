@@ -86,6 +86,22 @@ public class Countdown {
 	private boolean CheckTime()
 	{
 		// Test values for now:
+		String input = Settings.getTimeRange();
+		if (input == "-" || input == "" || input == null)
+			return true;
+		
+		String value1 = input.split("-")[0];
+	//	String value2 = input.split("-")[1];
+		if (LocalTime.parse(value1) == null)
+			System.out.println("VALUE1 IS NULL");
+		String inputTimeString = "10:83";
+	    try {
+	        LocalTime.parse(inputTimeString);
+	        System.out.println("Valid time string: " + inputTimeString);
+	    } catch (DateTimeParseException | NullPointerException e) {
+	        System.out.println("Invalid time string: " + inputTimeString);
+	    }
+
 		LocalTime start = LocalTime.parse( "09:30:00" );
 		LocalTime stop = LocalTime.parse( "19:15:00" );	
 		
