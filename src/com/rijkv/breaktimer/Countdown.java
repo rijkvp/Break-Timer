@@ -1,11 +1,10 @@
 package com.rijkv.breaktimer;
 
+import java.time.LocalTime;
+import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JLabel;
-
-import java.time.*;
-import java.util.Timer;
 
 enum CountdownState
 { 
@@ -19,6 +18,10 @@ public class Countdown {
 	private JLabel currentLabel;
 	
 	private Break breakWindow = new Break("Break", this);
+	private Reminder reminder = new Reminder("Break Reminder");
+	
+	private int reminderTime = 20;
+	private boolean didReminder = false;
 	
 	public Countdown() {
 		
@@ -68,6 +71,16 @@ public class Countdown {
                     time.purge();
                 } else {
                 	countdown--;
+                	reminderTime = Integer.parseInt(Settings.getReminderTime());
+                	if (countdown <= reminderTime)
+                	{
+                		reminder.SetTime(countdown);
+                		if (!didReminder) 
+                		{
+                			didReminder = true;
+                    		reminder.Open();
+                		}
+                	}
                 	Display();
                 	if (state == CountdownState.Break)
                 		breakWindow.SetTime(countdown);
@@ -85,6 +98,9 @@ public class Countdown {
 	}
 	private boolean CheckTime()
 	{
+		// TEMP FIX
+		return true;
+	/*
 		// Test values for now:
 		String input = Settings.getTimeRange();
 		if (input == "-" || input == "" || input == null)
@@ -95,12 +111,9 @@ public class Countdown {
 		if (LocalTime.parse(value1) == null)
 			System.out.println("VALUE1 IS NULL");
 		String inputTimeString = "10:83";
-	    try {
-	        LocalTime.parse(inputTimeString);
-	        System.out.println("Valid time string: " + inputTimeString);
-	    } catch (DateTimeParseException | NullPointerException e) {
-	        System.out.println("Invalid time string: " + inputTimeString);
-	    }
+		
+		LocalTime.parse(inputTimeString);
+        System.out.println("Valid time string: " + inputTimeString);
 
 		LocalTime start = LocalTime.parse( "09:30:00" );
 		LocalTime stop = LocalTime.parse( "19:15:00" );	
@@ -112,10 +125,12 @@ public class Countdown {
 			return false;
 		}
 		return true;
+		*/
 	}
 	
 	private void Switch()
 	{
+		didReminder = false;
 		switch(state)
 		{
 			case Break:

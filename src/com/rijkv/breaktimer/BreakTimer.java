@@ -87,6 +87,7 @@ public class BreakTimer {
         countdown.Setup();
         countdown.SetLabel(timeLabel);
 	}
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		BreakTimer.SetSystemUILook();
 		if (Arrays.stream(args).anyMatch("startup"::equals))

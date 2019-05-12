@@ -4,13 +4,14 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.NumberFormat;
 import java.util.prefs.Preferences;
 
-import javax.swing.*;
-import javax.swing.text.NumberFormatter;
-
-import com.sun.xml.internal.ws.util.StringUtils;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class Settings {
 	
@@ -28,6 +29,7 @@ public class Settings {
 	private JFormattedTextField durationTextField;
 	private JFormattedTextField skipTimeTextField;
 	private JFormattedTextField timeRangeTextField;
+	private JFormattedTextField reminderTimeTextField;
 	
 	static Preferences prefs;
 
@@ -37,6 +39,7 @@ public class Settings {
 	final static String BG_COLOR = "bg_color";
 	final static String FG_COLOR = "fg_color";
 	final static String TIME_RANGE = "time_range";
+	final static String REMINDER_TIME = "reminder_time";
 	
 	void SetupPrefs()
 	{
@@ -65,6 +68,9 @@ public class Settings {
         ShowLabel("Skip time");
         skipTimeTextField = new JFormattedTextField();
         panel.add(skipTimeTextField);
+        ShowLabel("Reminder Time");
+        reminderTimeTextField = new JFormattedTextField();
+        panel.add(reminderTimeTextField);        
         ShowLabel("Time Range");
         timeRangeTextField = new JFormattedTextField();
         panel.add(timeRangeTextField);
@@ -110,7 +116,7 @@ public class Settings {
 		settingsFrame = new JFrame(title);
 		
 		settingsFrame.add(contentPanel);
-		settingsFrame.setSize(300, 400);
+		settingsFrame.setSize(300, 500);
 		settingsFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		Load();
 	}
@@ -138,7 +144,10 @@ public class Settings {
 	{
 		return prefs.get(TIME_RANGE, "00:00:00-23:59:59");
 	}
-	
+	public static String getReminderTime()
+	{
+		return prefs.get(REMINDER_TIME, "20");
+	}
 	public static int getBreakDuration()
 	{
 		return Integer.parseInt(prefs.get(BREAK_DURATION_NAME, "0"));
@@ -149,31 +158,28 @@ public class Settings {
 		durationTextField.setText(prefs.get(BREAK_DURATION_NAME, "0"));
 		skipTimeTextField.setText(prefs.get(SKIP_TIME, "0"));
 		timeRangeTextField.setText(prefs.get(TIME_RANGE, "-"));
+		reminderTimeTextField.setText(prefs.get(REMINDER_TIME, "20"));
 		bgColor = Color.decode(prefs.get(BG_COLOR, "-1"));
 		fgColor = Color.decode(prefs.get(FG_COLOR, "-1"));
 	}
 	@SuppressWarnings("deprecation")
 	private void Save()
 	{
-		String value1 = timeTextField.getText();
-		String value2 = durationTextField.getText();
-		String value3 = skipTimeTextField.getText();
-		if (isNumeric(value1))
+		if (isNumeric(timeTextField.getText()))
 		{
-			prefs.put(TIME_BETWEEN_BREAK_NAME, value1);
-		} else {
-			return;
-		}
-		if (isNumeric(value2))
+			prefs.put(TIME_BETWEEN_BREAK_NAME, timeTextField.getText());
+		} 
+		if (isNumeric(durationTextField.getText()))
 		{
-			prefs.put(BREAK_DURATION_NAME, value2);
-		} else {
-		}
-		if (isNumeric(value3))
+			prefs.put(BREAK_DURATION_NAME, durationTextField.getText());
+		} 
+		if (isNumeric(skipTimeTextField.getText()))
 		{
-			prefs.put(SKIP_TIME, value3);
-		} else {
-			return;
+			prefs.put(SKIP_TIME, skipTimeTextField.getText());
+		} 
+		if (isNumeric(reminderTimeTextField.getText()))
+		{
+			prefs.put(REMINDER_TIME, reminderTimeTextField.getText());
 		}
 		prefs.put(TIME_RANGE, timeRangeTextField.getText());
 		prefs.put(BG_COLOR, String.valueOf(bgColor.getRGB()));
