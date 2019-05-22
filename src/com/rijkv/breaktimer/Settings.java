@@ -22,8 +22,8 @@ public class Settings {
 	private JButton bgButton;
 	private JButton fgButton;
 	
-	private Color bgColor = Color.BLACK;
-	private Color fgColor = Color.WHITE;
+	private Color bgColorSetting = Color.BLACK;
+	private Color fgColorSetting = Color.WHITE;
 	
 	private JFormattedTextField timeTextField;
 	private JFormattedTextField durationTextField;
@@ -41,6 +41,9 @@ public class Settings {
 	final static String TIME_RANGE = "time_range";
 	final static String REMINDER_TIME = "reminder_time";
 	
+	Color bgColor; 
+	Color textColor;
+
 	void SetupPrefs()
 	{
 		sun.util.logging.PlatformLogger platformLogger = sun.util.logging.PlatformLogger.getLogger("java.util.prefs");
@@ -51,6 +54,9 @@ public class Settings {
 	public Settings(String title) {
 		SetupPrefs();
 		
+		bgColor = getBGColor();
+		textColor = getFGColor();
+		
 		contentPanel = new JPanel();
 		
 		panel = new JPanel();
@@ -58,52 +64,43 @@ public class Settings {
 		gridLayout.setVgap(10);
         panel.setLayout(gridLayout);
         contentPanel.add(panel);
-
-        ShowLabel("Time between breaks");
-        timeTextField = new JFormattedTextField();
-        panel.add(timeTextField);
-        ShowLabel("Break duration");
-        durationTextField = new JFormattedTextField();
-        panel.add(durationTextField);
-        ShowLabel("Skip time");
-        skipTimeTextField = new JFormattedTextField();
-        panel.add(skipTimeTextField);
-        ShowLabel("Reminder Time");
-        reminderTimeTextField = new JFormattedTextField();
-        panel.add(reminderTimeTextField);        
-        ShowLabel("Time Range");
-        timeRangeTextField = new JFormattedTextField();
-        panel.add(timeRangeTextField);
         
-        bgButton = new JButton("Select background color");
+        // CREATE TEXT FIELDS
+        timeTextField = CreateTextField(timeTextField, "Time between breaks");
+        durationTextField = CreateTextField(durationTextField, "Beak duration");
+        skipTimeTextField = CreateTextField(skipTimeTextField, "Skip time");
+        reminderTimeTextField = CreateTextField(skipTimeTextField, "Reminder time");
+        timeRangeTextField = CreateTextField(timeRangeTextField, "Time range");
+
+        bgButton = CreateButton(bgButton, "Select background color");
         bgButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				bgColor = JColorChooser.showDialog( settingsFrame,
-	                       "Choose background color", bgColor );
+				bgColorSetting = JColorChooser.showDialog( settingsFrame,
+	                       "Choose background color", bgColorSetting );
 	   
-	                 if (bgColor == null )
-	                	 bgColor = Color.black;
+	                 if (bgColorSetting == null )
+	                	 bgColorSetting = Color.black;
 			}
         });
         panel.add(bgButton);
         
-        fgButton = new JButton("Select foreground color");
+        fgButton = CreateButton(fgButton, "Select foreground color");
         fgButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				fgColor = JColorChooser.showDialog( settingsFrame,
-	                       "Choose foreground color", fgColor );
+				fgColorSetting = JColorChooser.showDialog( settingsFrame,
+	                       "Choose foreground color", fgColorSetting );
 	   
-	                 if (fgColor == null )
-	                	 fgColor = Color.white;
+	                 if (fgColorSetting == null )
+	                	 fgColorSetting = Color.white;
 			}
         });
         panel.add(fgButton);
         
-        saveButton = new JButton("Save & Close");
+        saveButton = CreateButton(saveButton, "Save & Close");
         saveButton.addActionListener(new ActionListener()
         {
 			  public void actionPerformed(ActionEvent e)
@@ -113,8 +110,11 @@ public class Settings {
         });
         panel.add(saveButton);
         
+        panel.setBackground(bgColor);
+        contentPanel.setBackground(bgColor);
+        
 		settingsFrame = new JFrame(title);
-		
+        
 		settingsFrame.add(contentPanel);
 		settingsFrame.setSize(300, 500);
 		settingsFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -159,8 +159,8 @@ public class Settings {
 		skipTimeTextField.setText(prefs.get(SKIP_TIME, "0"));
 		timeRangeTextField.setText(prefs.get(TIME_RANGE, "-"));
 		reminderTimeTextField.setText(prefs.get(REMINDER_TIME, "20"));
-		bgColor = Color.decode(prefs.get(BG_COLOR, "-1"));
-		fgColor = Color.decode(prefs.get(FG_COLOR, "-1"));
+		bgColorSetting = Color.decode(prefs.get(BG_COLOR, "-1"));
+		fgColorSetting = Color.decode(prefs.get(FG_COLOR, "-1"));
 	}
 	@SuppressWarnings("deprecation")
 	private void Save()
@@ -182,8 +182,8 @@ public class Settings {
 			prefs.put(REMINDER_TIME, reminderTimeTextField.getText());
 		}
 		prefs.put(TIME_RANGE, timeRangeTextField.getText());
-		prefs.put(BG_COLOR, String.valueOf(bgColor.getRGB()));
-		prefs.put(FG_COLOR, String.valueOf(fgColor.getRGB()));
+		prefs.put(BG_COLOR, String.valueOf(bgColorSetting.getRGB()));
+		prefs.put(FG_COLOR, String.valueOf(fgColorSetting.getRGB()));
 	  	settingsFrame.hide();
 	}
 	public static boolean isNumeric(String str) { 
@@ -194,9 +194,26 @@ public class Settings {
 		    return false;  
 		  }  
 		}
+	private JButton CreateButton(JButton button, String text)
+	{
+		button = new JButton(text);
+		button.setForeground(textColor);
+		button.setBackground(bgColor);
+		return button;
+	}
+	private JFormattedTextField CreateTextField(JFormattedTextField textField, String text)
+	{
+		ShowLabel(text);
+		textField = new JFormattedTextField();
+		textField.setForeground(textColor);
+		textField.setBackground(bgColor);
+		panel.add(textField);
+		return textField;
+	}
 	private void ShowLabel(String text)
 	{
 		JLabel label = new JLabel(text);
+		label.setForeground(textColor);
 		panel.add(label);
 	}
 }

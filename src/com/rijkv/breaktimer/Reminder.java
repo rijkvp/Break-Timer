@@ -14,17 +14,22 @@ public class Reminder {
 	private JFrame reminderFrame;
 
 	public Reminder(String title) {		
+		Color bgColor = Settings.getBGColor();
+		Color textColor = Settings.getFGColor();
+		
 		contentPanel = new JPanel();
+		contentPanel.setBackground(bgColor);
 		contentPanel.setBounds(0, 400, 400, 400);
 		
 		panel = new JPanel();
 		GridLayout gridLayout = new GridLayout(0,1);
 		gridLayout.setVgap(10);
         panel.setLayout(gridLayout);
+        panel.setBackground(bgColor);
         contentPanel.add(panel);
         
         label = new JLabel("not set", SwingConstants.CENTER);
-        
+        label.setForeground(textColor);
         Font font = new Font("Arial", Font.BOLD, 28);
         label.setFont(font);
         

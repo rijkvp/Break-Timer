@@ -1,6 +1,6 @@
 package com.rijkv.breaktimer;
 
-import java.time.LocalTime;
+//import java.time.LocalTime;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -66,6 +66,7 @@ public class Countdown {
         time.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (countdown == 0) {
+                	reminder.Close();
                     Switch();
                     time.cancel();
                     time.purge();

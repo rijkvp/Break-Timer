@@ -1,5 +1,6 @@
 package com.rijkv.breaktimer;
 
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,20 +33,28 @@ public class BreakTimer {
 	
 	public BreakTimer(String title)
 	{
+		Color bgColor = Settings.getBGColor();
+		Color textColor = Settings.getFGColor();
+		
 		contentPanel = new JPanel();
 		
 		panel = new JPanel();
+		
 		GridLayout gridLayout = new GridLayout(0,1);
 		gridLayout.setVgap(10);
         panel.setLayout(gridLayout);
        
         timeLabel = new JLabel("Break Over: ..s");
         timeLabel.setFont(timeLabel.getFont ().deriveFont (24.0f));
+        timeLabel.setForeground(textColor);
+
         panel.add(timeLabel);
         
         contentPanel.add(panel);
 		
         settingsButton = new JButton("Settings");
+        settingsButton.setForeground(textColor);
+        settingsButton.setBackground(bgColor);
         settingsButton.addActionListener(new ActionListener()
         {
           public void actionPerformed(ActionEvent e)
@@ -56,6 +65,8 @@ public class BreakTimer {
         panel.add(settingsButton);
         
         JButton breakButton = new JButton("Break Now");
+        breakButton.setForeground(textColor);
+        breakButton.setBackground(bgColor);
         breakButton.addActionListener(new ActionListener()
         {
           public void actionPerformed(ActionEvent e)
@@ -67,6 +78,8 @@ public class BreakTimer {
 
         
         JButton quitButton = new JButton("Stop & Quit");
+        quitButton.setForeground(textColor);
+        quitButton.setBackground(bgColor);
         quitButton.addActionListener(new ActionListener()
         {
           public void actionPerformed(ActionEvent e)
@@ -83,13 +96,14 @@ public class BreakTimer {
 		mainFrame.add(contentPanel);
 		mainFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
+		panel.setBackground(bgColor);
+		contentPanel.setBackground(bgColor);
 
         countdown.Setup();
         countdown.SetLabel(timeLabel);
 	}
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		BreakTimer.SetSystemUILook();
 		if (Arrays.stream(args).anyMatch("startup"::equals))
 		{
 			BreakTimer breakTimer = new BreakTimer("Break Timer [STARTUP]");
@@ -102,20 +116,6 @@ public class BreakTimer {
 	public void Hide()
 	{
 		mainFrame.hide();
-	}
-	public static void SetSystemUILook()
-	{
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
 	}
 	public static String SecoundsToTime()
 	{
