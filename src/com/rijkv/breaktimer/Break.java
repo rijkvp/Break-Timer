@@ -34,6 +34,8 @@ public class Break implements Runnable {
 	private boolean ctrlPressed = false;
 	private boolean shiftPressed = false;
 	
+	private final static boolean FORCE_MODE = false;
+	
 	public Break(String title, Countdown countdown) {
 		refCountdown = countdown;		
 		
@@ -142,31 +144,34 @@ public class Break implements Runnable {
 		new Thread(this).start();
 	}
 	public void run() {
-	    try {
-	        kill("explorer.exe"); // Kill explorer
-	        
-	        Robot robot = new Robot();
-	        int i = 0;
-	        while (isOpen) {
-	        	if (ctrlPressed && escPressed && shiftPressed)
-	            {
-	            	ForceStop();
-	            }
-	           sleep(30L);
-	           focus();
-	           releaseKeys(robot);
-	           sleep(15L);
-	           focus();
-	           if (i++ % 10 == 0) {
-	               kill("taskmgr.exe");
-	           }
-	           focus();
-	           releaseKeys(robot);
-	        }
-	        Runtime.getRuntime().exec("explorer.exe"); // Restart explorer
-	    } catch (Exception e) {
-	    	System.out.println(e.toString());
-	    }
+		if (FORCE_MODE)
+		{
+			try {
+		        kill("explorer.exe"); // Kill explorer
+		        
+		        Robot robot = new Robot();
+		        int i = 0;
+		        while (isOpen) {
+		        	if (ctrlPressed && escPressed && shiftPressed)
+		            {
+		            	ForceStop();
+		            }
+		           sleep(30L);
+		           focus();
+		           releaseKeys(robot);
+		           sleep(15L);
+		           focus();
+		           if (i++ % 10 == 0) {
+		               kill("taskmgr.exe");
+		           }
+		           focus();
+		           releaseKeys(robot);
+		        }
+		        Runtime.getRuntime().exec("explorer.exe"); // Restart explorer
+		    } catch (Exception e) {
+		    	System.out.println(e.toString());
+		    }
+		}
 	}
 	@SuppressWarnings("deprecation")
 	public void Close()
