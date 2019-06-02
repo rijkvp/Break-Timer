@@ -1,5 +1,5 @@
 # Break Timer
-A program that lets you take pauses
+A program that forces you to take breaks.
 
 ## Pictures
 
