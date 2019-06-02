@@ -4,6 +4,10 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
@@ -19,6 +23,7 @@ public class Settings {
 	private JPanel contentPanel;
 	private JPanel panel;
 	private JButton saveButton;
+	private JButton saveRestartButton;
 	private JButton bgButton;
 	private JButton fgButton;
 	
@@ -30,6 +35,9 @@ public class Settings {
 	private JFormattedTextField skipTimeTextField;
 	private JFormattedTextField timeRangeTextField;
 	private JFormattedTextField reminderTimeTextField;
+	private JFormattedTextField breakTitleTextField;
+	private JFormattedTextField breakTextTextField;
+	private JFormattedTextField fontNameTextField;
 	
 	static Preferences prefs;
 
@@ -40,6 +48,9 @@ public class Settings {
 	final static String FG_COLOR = "fg_color";
 	final static String TIME_RANGE = "time_range";
 	final static String REMINDER_TIME = "reminder_time";
+	final static String BREAK_TITLE_TEXT = "break_title_text";
+	final static String BREAK_TEXT = "break_text";
+	final static String FONT_NAME = "font_name";
 	
 	Color bgColor; 
 	Color textColor;
@@ -71,7 +82,10 @@ public class Settings {
         skipTimeTextField = CreateTextField(skipTimeTextField, "Skip time");
         reminderTimeTextField = CreateTextField(skipTimeTextField, "Reminder time");
         timeRangeTextField = CreateTextField(timeRangeTextField, "Time range");
-
+        breakTitleTextField = CreateTextField(breakTitleTextField, "Break title text");
+        breakTextTextField = CreateTextField(breakTextTextField, "Break text");
+        fontNameTextField = CreateTextField(fontNameTextField, "Break font name");
+        
         bgButton = CreateButton(bgButton, "Select background color");
         bgButton.addActionListener(new ActionListener() {
 
@@ -100,7 +114,7 @@ public class Settings {
         });
         panel.add(fgButton);
         
-        saveButton = CreateButton(saveButton, "Save & Close");
+        saveButton = CreateButton(saveButton, "Save");
         saveButton.addActionListener(new ActionListener()
         {
 			  public void actionPerformed(ActionEvent e)
@@ -110,13 +124,24 @@ public class Settings {
         });
         panel.add(saveButton);
         
+        saveRestartButton = CreateButton(saveRestartButton, "Save & Restart");
+        saveRestartButton.addActionListener(new ActionListener()
+        {
+			  public void actionPerformed(ActionEvent e)
+			  {
+				  	Save();
+				  	RestartApplication();
+			  }
+        });
+        panel.add(saveRestartButton);
+        
         panel.setBackground(bgColor);
         contentPanel.setBackground(bgColor);
         
 		settingsFrame = new JFrame(title);
         
 		settingsFrame.add(contentPanel);
-		settingsFrame.setSize(300, 500);
+		settingsFrame.setSize(300, 900);
 		settingsFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		Load();
 	}
@@ -142,7 +167,7 @@ public class Settings {
 	}
 	public static String getTimeRange()
 	{
-		return prefs.get(TIME_RANGE, "00:00:00-23:59:59");
+		return prefs.get(TIME_RANGE, "");
 	}
 	public static String getReminderTime()
 	{
@@ -151,6 +176,18 @@ public class Settings {
 	public static int getBreakDuration()
 	{
 		return Integer.parseInt(prefs.get(BREAK_DURATION_NAME, "0"));
+	}
+	public static String getBreakTitleText()
+	{
+		return prefs.get(BREAK_TITLE_TEXT, "Break");
+	}
+	public static String getBreakText()
+	{
+		return prefs.get(BREAK_TEXT, "Have a nice break!");
+	}
+	public static String getFontName()
+	{
+		return prefs.get(FONT_NAME, "Arial");
 	}
 	private void Load()
 	{
@@ -161,6 +198,9 @@ public class Settings {
 		reminderTimeTextField.setText(prefs.get(REMINDER_TIME, "20"));
 		bgColorSetting = Color.decode(prefs.get(BG_COLOR, "-1"));
 		fgColorSetting = Color.decode(prefs.get(FG_COLOR, "-1"));
+		breakTitleTextField.setText(prefs.get(BREAK_TITLE_TEXT, "Break"));
+		breakTextTextField.setText(prefs.get(BREAK_TEXT, "Have a nice break!"));
+		fontNameTextField.setText(prefs.get(FONT_NAME, "Arial"));
 	}
 	@SuppressWarnings("deprecation")
 	private void Save()
@@ -181,9 +221,12 @@ public class Settings {
 		{
 			prefs.put(REMINDER_TIME, reminderTimeTextField.getText());
 		}
-		prefs.put(TIME_RANGE, timeRangeTextField.getText());
+		prefs.put(BREAK_TITLE_TEXT, breakTitleTextField.getText());
+		prefs.put(BREAK_TEXT, breakTextTextField.getText());
+		prefs.put(FONT_NAME, fontNameTextField.getText());
 		prefs.put(BG_COLOR, String.valueOf(bgColorSetting.getRGB()));
 		prefs.put(FG_COLOR, String.valueOf(fgColorSetting.getRGB()));
+		prefs.put(TIME_RANGE, timeRangeTextField.getText());
 	  	settingsFrame.hide();
 	}
 	public static boolean isNumeric(String str) { 
@@ -215,5 +258,35 @@ public class Settings {
 		JLabel label = new JLabel(text);
 		label.setForeground(textColor);
 		panel.add(label);
+	}
+	private void RestartApplication()
+	{
+	  final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+	  File currentJar = null;
+		try {
+			currentJar = new File(BreakTimer.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	
+	  /* is it a jar file? */
+	  if(!currentJar.getName().endsWith(".jar"))
+	    return;
+	
+	  /* Build command: java -jar application.jar */
+	  final ArrayList<String> command = new ArrayList<String>();
+	  command.add(javaBin);
+	  command.add("-jar");
+	  command.add(currentJar.getPath());
+	
+	  final ProcessBuilder builder = new ProcessBuilder(command);
+	  try {
+		builder.start();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	  System.exit(0);
 	}
 }

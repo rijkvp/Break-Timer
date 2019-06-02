@@ -1,6 +1,7 @@
 package com.rijkv.breaktimer;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
@@ -20,6 +21,7 @@ public class Break implements Runnable {
 	
 	private JLabel label;
 	private JLabel timeLabel;
+	private JLabel breakText;
 	
 	private Color bgColor = Color.BLACK;
 	private Color textColor = Color.WHITE;
@@ -47,18 +49,28 @@ public class Break implements Runnable {
         panel.setLayout(gridLayout);
         contentPanel.add(panel);
         
+        
+        Font font = new Font(Settings.getFontName(), Font.PLAIN, 24);
         bgColor = Settings.getBGColor();
 		textColor = Settings.getFGColor();
         
-        label = new JLabel("Break", SwingConstants.CENTER);
+        label = new JLabel(Settings.getBreakTitleText(), SwingConstants.CENTER);
+        label.setFont(font);
         label.setFont(label.getFont ().deriveFont (128.0f));
         label.setForeground(textColor);
-		panel.add(label);
+		panel.add(label);		
         
 		timeLabel = new JLabel("not set", SwingConstants.CENTER);
+		timeLabel.setFont(font);
 		timeLabel.setForeground(textColor);
 		timeLabel.setFont(timeLabel.getFont ().deriveFont (40.0f));
 		panel.add(timeLabel);		
+		
+		breakText = new JLabel(Settings.getBreakText(), SwingConstants.CENTER);
+		breakText.setFont(font);
+		breakText.setFont(label.getFont().deriveFont (34.0f));
+		breakText.setForeground(textColor);
+		panel.add(breakText);
 		
         breakFrame = new JFrame(title);
 		breakFrame.add(contentPanel);

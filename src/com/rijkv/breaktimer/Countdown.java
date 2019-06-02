@@ -1,5 +1,7 @@
 package com.rijkv.breaktimer;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 //import java.time.LocalTime;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -99,25 +101,43 @@ public class Countdown {
 	}
 	private boolean CheckTime()
 	{
-		// TEMP FIX
-		return true;
-	/*
-		// Test values for now:
 		String input = Settings.getTimeRange();
+		
 		if (input == "-" || input == "" || input == null)
 			return true;
 		
-		String value1 = input.split("-")[0];
-	//	String value2 = input.split("-")[1];
-		if (LocalTime.parse(value1) == null)
-			System.out.println("VALUE1 IS NULL");
-		String inputTimeString = "10:83";
+		String[] split = input.split("-");
+		if (split.length != 2)
+		{
+			System.out.println("UNABLE TO SPLIT TIME RANGE!!");
+			return true;
+		}
 		
-		LocalTime.parse(inputTimeString);
-        System.out.println("Valid time string: " + inputTimeString);
-
-		LocalTime start = LocalTime.parse( "09:30:00" );
-		LocalTime stop = LocalTime.parse( "19:15:00" );	
+		String value1 = split[0];
+		String value2 = split[1];
+		
+		
+		LocalTime start = null;
+		LocalTime stop = null;
+		
+		try
+		{
+			start = LocalTime.parse(value1);
+		}
+		catch (DateTimeParseException e)
+		{
+			System.out.println("UNABLE TO PARSE TIME!!! VALUE1: " + value1);
+			return true;
+		}
+		try
+		{
+			stop = LocalTime.parse(value2);
+		}
+		catch (DateTimeParseException e)
+		{
+			System.out.println("UNABLE TO PARSE TIME!!! VALUE2: " + value2);
+			return true;
+		}
 		
 		Boolean inRange = (LocalTime.now().isAfter(start) && LocalTime.now().isBefore(stop));
 		
@@ -126,7 +146,6 @@ public class Countdown {
 			return false;
 		}
 		return true;
-		*/
 	}
 	
 	private void Switch()
@@ -149,6 +168,7 @@ public class Countdown {
 					state = CountdownState.Countdown;
 					countdown = Settings.getTimeBetweenBreak();
 					breakWindow.Close();
+					didReminder = true;
 				}
 				break;
 			default:
