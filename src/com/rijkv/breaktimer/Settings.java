@@ -72,7 +72,7 @@ public class Settings {
 		
 		panel = new JPanel();
 		GridLayout gridLayout = new GridLayout(0,1);
-		gridLayout.setVgap(10);
+		gridLayout.setVgap(2);
         panel.setLayout(gridLayout);
         contentPanel.add(panel);
         
@@ -141,7 +141,7 @@ public class Settings {
 		settingsFrame = new JFrame(title);
         
 		settingsFrame.add(contentPanel);
-		settingsFrame.setSize(300, 900);
+		settingsFrame.setSize(300, 650);
 		settingsFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		Load();
 	}

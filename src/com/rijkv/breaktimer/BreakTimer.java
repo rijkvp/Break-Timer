@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -100,16 +99,7 @@ public class BreakTimer {
         countdown.Setup();
         countdown.SetLabel(timeLabel);
 	}
-	@SuppressWarnings("unused")
-	public static void main(String[] args) {
-		if (Arrays.stream(args).anyMatch("startup"::equals))
-		{
-			BreakTimer breakTimer = new BreakTimer("Break Timer [STARTUP]");
-			breakTimer.Hide();
-		} else {
-			BreakTimer breakTimer = new BreakTimer("Break Timer");
-		}
-	}
+	
 	@SuppressWarnings("deprecation")
 	public void Hide()
 	{
@@ -117,7 +107,6 @@ public class BreakTimer {
 	}
 	public static String SecoundsToTime()
 	{
-		
 		return "null";
 	}
 }
