@@ -29,4 +29,4 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 :--------------------------------------  
 
-echo start javaw -Xmx200m -jar "%CD%\build 1.jar" "startup"> "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\break_time_startup.bat"
+echo start javaw -Xmx200m -jar "%CD%\build 2.jar" "startup"> "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\break_time_startup.bat"
