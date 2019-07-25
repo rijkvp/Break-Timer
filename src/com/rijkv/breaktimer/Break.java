@@ -34,7 +34,7 @@ public class Break implements Runnable {
 	private boolean ctrlPressed = false;
 	private boolean shiftPressed = false;
 	
-	private final static boolean FORCE_MODE = false;
+	private final static boolean FORCE_MODE = true;
 	
 	public Break(String title, Countdown countdown) {
 		refCountdown = countdown;		

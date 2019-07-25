@@ -8,6 +8,9 @@ import java.util.TimerTask;
 
 import javax.swing.JLabel;
 
+import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
+
 enum CountdownState
 { 
     Countdown, Break; 
@@ -25,8 +28,28 @@ public class Countdown {
 	private int reminderTime = 20;
 	private boolean didReminder = false;
 	
+	private MouseListener mouseListener;
+	private KeyListener keyListener;
+	
 	public Countdown() {
+		try {
+			GlobalScreen.registerNativeHook();
+		}
+		catch (NativeHookException ex) {
+			System.err.println("There was a problem registering the native hook.");
+			System.err.println(ex.getMessage());
+
+			System.exit(1);
+		}
+
+		// Mouse listener
+		mouseListener = new MouseListener();
+		GlobalScreen.addNativeMouseListener(mouseListener);
+		GlobalScreen.addNativeMouseMotionListener(mouseListener);
 		
+		// Key listener
+		keyListener = new KeyListener();
+		GlobalScreen.addNativeKeyListener(keyListener);
 	}
 	
 	public void SetLabel(JLabel label)
@@ -72,8 +95,25 @@ public class Countdown {
                     Switch();
                     time.cancel();
                     time.purge();
-                } else {
-                	countdown--;
+                } 
+                else 
+                {
+                	if (state == CountdownState.Countdown)
+                	{
+                		if (keyListener.isKeyboardUsed() || mouseListener.isMouseUsed())
+                		{
+                			countdown--;
+                		}
+                	}
+                	else
+                	{
+                		if (!keyListener.isKeyboardUsed() || !mouseListener.isMouseUsed())
+                		{
+                    		countdown--;
+                		}
+                	}
+                	
+                	
                 	reminderTime = Integer.parseInt(Settings.getReminderTime());
                 	if (countdown <= reminderTime)
                 	{
@@ -84,7 +124,9 @@ public class Countdown {
                     		reminder.Open();
                 		}
                 	}
+                	
                 	Display();
+                	
                 	if (state == CountdownState.Break)
                 		breakWindow.SetTime(countdown);
                 }
