@@ -261,8 +261,8 @@ public class Settings {
 	}
 	private void RestartApplication()
 	{
-	  final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-	  File currentJar = null;
+		final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+	  	File currentJar = null;
 		try {
 			currentJar = new File(BreakTimer.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 		} catch (URISyntaxException e1) {
@@ -270,23 +270,22 @@ public class Settings {
 			e1.printStackTrace();
 		}
 	
-	  /* is it a jar file? */
-	  if(!currentJar.getName().endsWith(".jar"))
-	    return;
-	
-	  /* Build command: java -jar application.jar */
-	  final ArrayList<String> command = new ArrayList<String>();
-	  command.add(javaBin);
-	  command.add("-jar");
-	  command.add(currentJar.getPath());
-	
-	  final ProcessBuilder builder = new ProcessBuilder(command);
-	  try {
-		builder.start();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	  System.exit(0);
+		/* is it a jar file? */
+		if(!currentJar.getName().endsWith(".jar"))
+		  return;
+		
+		/* Build command: java -jar application.jar */
+		final ArrayList<String> command = new ArrayList<String>();
+		command.add(javaBin);
+		command.add("-jar");
+		command.add(currentJar.getPath());
+		
+		final ProcessBuilder builder = new ProcessBuilder(command);
+		try {
+		  builder.start();
+		} catch (IOException e) {
+		  e.printStackTrace();
+		}
+		  System.exit(0);
 	}
 }

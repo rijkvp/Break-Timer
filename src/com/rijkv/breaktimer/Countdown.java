@@ -20,6 +20,8 @@ public class Countdown {
 	
 	private CountdownState state = CountdownState.Countdown;
 	private int countdown;
+	private int inactiveTime;
+	private final int maxInactiveTime = 5;
 	private JLabel currentLabel;
 	
 	private Break breakWindow = new Break("Break", this);
@@ -66,10 +68,10 @@ public class Countdown {
 		switch(state)
 		{
 			case Break:
-				currentLabel.setText("In Break: " + Integer.toString(countdown) + "s");
+				currentLabel.setText("Break " + formatHHMMSS(countdown));
 				break;
 			case Countdown:
-				currentLabel.setText("Break over: " + Integer.toString(countdown) + "s");
+				currentLabel.setText("Break over " + formatHHMMSS(countdown));
 				break;
 			default:
 				break;
@@ -101,9 +103,12 @@ public class Countdown {
                 	if (state == CountdownState.Countdown)
                 	{
                 		if (keyListener.isKeyboardUsed() || mouseListener.isMouseUsed())
-                		{
+                			inactiveTime = 0;
+                		else
+                			inactiveTime++;
+                		
+                		if (!(inactiveTime > maxInactiveTime))
                 			countdown--;
-                		}
                 	}
                 	else
                 	{
@@ -217,5 +222,18 @@ public class Countdown {
 				break;
 		}
 		Start();
+	}
+	
+	public static String formatHHMMSS(long secondsCount){
+	    int seconds = (int) (secondsCount % 60);
+	    secondsCount -= seconds;
+	    long minutesCount = secondsCount / 60;
+	    long minutes = minutesCount % 60;
+	    minutesCount -= minutes;
+	    long hoursCount = minutesCount / 60;
+	    if (hoursCount != 0)
+	    	return String.format("%02d", hoursCount) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
+	    else
+	    	return String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
 	}
 }

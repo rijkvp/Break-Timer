@@ -124,7 +124,7 @@ public class Break implements Runnable {
 	}
 	public void SetTime(int time)
 	{
-		timeLabel.setText(Integer.toString(time) + " seconds left");
+		timeLabel.setText(Countdown.formatHHMMSS(time));
 	}
 	public void Open()
 	{
