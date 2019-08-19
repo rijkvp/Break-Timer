@@ -120,14 +120,17 @@ public class Countdown {
                 	
                 	
                 	reminderTime = Integer.parseInt(Settings.getReminderTime());
-                	if (countdown <= reminderTime)
+                	if (CheckTime())
                 	{
-                		reminder.SetTime(countdown);
-                		if (!didReminder) 
-                		{
-                			didReminder = true;
-                    		reminder.Open();
-                		}
+                		if (countdown <= reminderTime)
+                    	{
+                    		reminder.SetTime(countdown);
+                    		if (!didReminder) 
+                    		{
+                    			didReminder = true;
+                        		reminder.Open();
+                    		}
+                    	}
                 	}
                 	
                 	Display();
