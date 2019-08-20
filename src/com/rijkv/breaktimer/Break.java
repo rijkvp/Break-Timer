@@ -12,6 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import java.util.Random;
+
 
 public class Break implements Runnable {
 	
@@ -35,12 +37,18 @@ public class Break implements Runnable {
 	private boolean shiftPressed = false;
 	
 	private final static boolean FORCE_MODE = true;
+	private final static boolean RANDOM_MODE = true;
+	
+	private final static String[] FONTS = { "Arial", "Arial Black", "Bahnschrift", "Castellar",
+			"Comic Sans MS", "Elephant", "Gabriola", "Gill Sans", "Haettenschweiler", "Lucida Console", "Stencil",
+			"Times New Roman", "Verdana", "Wide Latin"};
+	
+	private final static String[] TITLES = { "Time for a break!", "BREAK!", "Break.", "Just a normal break.", "Another break", "KAERB|BREAK" };
+	private final static String[] DESCRIPTIONS = { "Walk away! NOW!! OR...", "Let's move away!", "Just walk away from your pc.", "Time for a drink!", "Don't look at this screen!" };
 	
 	public Break(String title, Countdown countdown) {
 		refCountdown = countdown;		
 		
-		bgColor = Settings.getBGColor();
-		textColor = Settings.getFGColor();
 		
 		contentPanel = new JPanel();
 		contentPanel.setBounds(0, 400, 400, 400);
@@ -52,27 +60,17 @@ public class Break implements Runnable {
         contentPanel.add(panel);
         
         
-        Font font = new Font(Settings.getFontName(), Font.PLAIN, 24);
-        bgColor = Settings.getBGColor();
-		textColor = Settings.getFGColor();
-        
-        label = new JLabel(Settings.getBreakTitleText(), SwingConstants.CENTER);
-        label.setFont(font);
-        label.setFont(label.getFont ().deriveFont (128.0f));
-        label.setForeground(textColor);
+       
+        label = new JLabel("not set", SwingConstants.CENTER);
 		panel.add(label);		
         
 		timeLabel = new JLabel("not set", SwingConstants.CENTER);
-		timeLabel.setFont(font);
-		timeLabel.setForeground(textColor);
-		timeLabel.setFont(timeLabel.getFont ().deriveFont (40.0f));
 		panel.add(timeLabel);		
 		
-		breakText = new JLabel(Settings.getBreakText(), SwingConstants.CENTER);
-		breakText.setFont(font);
-		breakText.setFont(label.getFont().deriveFont (34.0f));
-		breakText.setForeground(textColor);
+		breakText = new JLabel("not set", SwingConstants.CENTER);
 		panel.add(breakText);
+		
+		
 		
         breakFrame = new JFrame(title);
 		breakFrame.add(contentPanel);
@@ -132,17 +130,113 @@ public class Break implements Runnable {
 		ctrlPressed = false;
 		shiftPressed = false;
 		
-		bgColor = Settings.getBGColor();
-		textColor = Settings.getFGColor();
-		label.setForeground(textColor);
-		timeLabel.setForeground(textColor);
-		panel.setBackground(bgColor);
-		contentPanel.setBackground(bgColor);
+		UpdateGUI();
 		
 		breakFrame.setVisible(true);
 		isOpen = true;
 		new Thread(this).start();
 	}
+	private void UpdateGUI()
+	{
+		GetColors();
+		Font font = GetFont();
+		String title = GetTitle();
+		String description = GetDescription();
+		
+		label.setText(title);
+		label.setForeground(textColor);
+		label.setFont(font);
+		label.setFont(label.getFont ().deriveFont (128.0f));
+		timeLabel.setForeground(textColor);
+		timeLabel.setFont(font);
+		timeLabel.setFont(timeLabel.getFont ().deriveFont (40.0f));
+		breakText.setText(description);
+		breakText.setForeground(textColor);
+		breakText.setFont(font);
+		panel.setBackground(bgColor);
+		panel.setFont(font);
+		contentPanel.setBackground(bgColor);
+		contentPanel.setFont(font);
+		breakText.setFont(label.getFont().deriveFont (34.0f));
+	}
+	private String GetTitle()
+	{
+		if (!RANDOM_MODE)
+		{
+			return Settings.getBreakTitleText();
+		}
+		else
+		{
+			Random rand = new Random();
+        	int randomIndex = rand.nextInt(TITLES.length);
+        	return TITLES[randomIndex];
+		}
+	}
+	private String GetDescription()
+	{
+		if (!RANDOM_MODE)
+		{
+			return Settings.getBreakText();
+		}
+		else
+		{
+			Random rand = new Random();
+			int randomIndex = rand.nextInt(DESCRIPTIONS.length);
+        	return DESCRIPTIONS[randomIndex];
+		}
+	}
+	private Font GetFont()
+	{
+		if (!RANDOM_MODE)
+        {        	
+        	return new Font(Settings.getFontName(), Font.PLAIN, 46);
+        }
+        else
+        {
+        	Random rand = new Random();
+        	int randomIndex = rand.nextInt(FONTS.length);
+        	String randomFontName = FONTS[randomIndex];
+        	
+        	return new Font(randomFontName, Font.PLAIN, 46);
+        }
+	}
+	
+	private void GetColors()
+	{
+		if (!RANDOM_MODE)
+		{
+			bgColor = Settings.getBGColor();
+			textColor = Settings.getFGColor();
+		}
+		else
+		{
+			Random rand = new Random();
+			
+			float r = rand.nextFloat();
+			float g = rand.nextFloat();
+			float b = rand.nextFloat();
+			Color darkColor = new Color(r, g, b);
+			
+			float r_light = rand.nextFloat() / 2f + 0.5f;
+			float g_light = rand.nextFloat() / 2f + 0.5f;
+			float b_light = rand.nextFloat() / 2f + 0.5f;
+			Color lightColor = new Color(r_light, g_light, b_light);
+			
+			// 50% chance
+			float random = rand.nextFloat();
+			if (random > 0.5f)
+			{
+				bgColor = lightColor;
+				textColor = darkColor;
+			}
+			else
+			{
+				bgColor = darkColor;
+				textColor = lightColor;
+			}
+		}
+	}
+	
 	public void run() {
 		if (FORCE_MODE)
 		{
@@ -179,6 +273,7 @@ public class Break implements Runnable {
 		isOpen = false;
 		breakFrame.hide();
 	}
+	
 	 private void releaseKeys(Robot robot) {
 	    robot.keyRelease(17);
 	    robot.keyRelease(18);
