@@ -24,8 +24,8 @@ public class Countdown {
 	private final int maxInactiveTime = 5;
 	private JLabel currentLabel;
 	
-	private Break breakWindow = new Break("Break", this);
-	private Reminder reminder = new Reminder("Break Reminder");
+	private Break breakWindow = new Break(this);
+	private Reminder reminder = new Reminder();
 	
 	private int reminderTime = 20;
 	private boolean didReminder = false;
@@ -58,6 +58,7 @@ public class Countdown {
 	{
 		currentLabel = label;
 	}
+	
 	public boolean CanSkip()
 	{
 		return (countdown < Settings.getBreakDuration() - Settings.getSkipTime());
@@ -109,46 +110,47 @@ public class Countdown {
                 		
                 		if (!(inactiveTime > maxInactiveTime))
                 			countdown--;
+                		
+                		if (CheckTime())
+                    	{
+                    		reminderTime = Integer.parseInt(Settings.getReminderTime());
+                    		if (countdown <= reminderTime)
+                        	{
+                        		reminder.SetTime(countdown);
+                        		if (!didReminder) 
+                        		{
+                        			didReminder = true;
+                            		reminder.Open();
+                        		}
+                        	}
+                    	}
                 	}
-                	else
+                	else if (state == CountdownState.Break)
                 	{
                 		if (!keyListener.isKeyboardUsed() || !mouseListener.isMouseUsed())
                 		{
                     		countdown--;
                 		}
-                	}
-                	
-                	
-                	reminderTime = Integer.parseInt(Settings.getReminderTime());
-                	if (CheckTime())
-                	{
-                		if (countdown <= reminderTime)
-                    	{
-                    		reminder.SetTime(countdown);
-                    		if (!didReminder) 
-                    		{
-                    			didReminder = true;
-                        		reminder.Open();
-                    		}
-                    	}
+
+                		breakWindow.SetTime(countdown);
                 	}
                 	
                 	Display();
-                	
-                	if (state == CountdownState.Break)
-                		breakWindow.SetTime(countdown);
                 }
             }
         }, delay, period);
 	}
+	
 	public void BreakNow()
 	{
 		countdown = 0;
 	}
+	
 	public void ForceStop()
 	{
 		countdown = 0;
 	}
+	
 	private boolean CheckTime()
 	{
 		String input = Settings.getTimeRange();

@@ -14,21 +14,16 @@ public class BreakTimer {
 	
 	private JFrame mainFrame;
 	
-	
 	private JPanel contentPanel;
 	private JPanel panel;
-	
 	private JButton settingsButton;
-	
 	private JLabel timeLabel;
 	
 	private Settings settings = new Settings("Settings");
-	
 	private Countdown countdown = new Countdown();
+		
 	
-	
-	
-	public BreakTimer(String title)
+	public BreakTimer()
 	{
 		Color bgColor = Settings.getBGColor();
 		Color textColor = Settings.getFGColor();
@@ -87,7 +82,7 @@ public class BreakTimer {
         panel.add(quitButton);
         
         
-		mainFrame = new JFrame(title);
+		mainFrame = new JFrame("Break Timer");
 		mainFrame.setVisible(true);
 		mainFrame.setSize(300, 250);
 		mainFrame.add(contentPanel);
@@ -104,9 +99,5 @@ public class BreakTimer {
 	public void Hide()
 	{
 		mainFrame.hide();
-	}
-	public static String SecoundsToTime()
-	{
-		return "null";
 	}
 }

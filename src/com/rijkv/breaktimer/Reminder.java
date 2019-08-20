@@ -5,15 +5,15 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Reminder {
+
+	private JFrame reminderFrame;
 	
 	private JPanel contentPanel;
 	private JPanel panel;
-	
 	private JLabel label;
 	
-	private JFrame reminderFrame;
 
-	public Reminder(String title) {		
+	public Reminder() {		
 		Color bgColor = Settings.getBGColor();
 		Color textColor = Settings.getFGColor();
 		
@@ -30,21 +30,23 @@ public class Reminder {
         
         label = new JLabel("not set", SwingConstants.CENTER);
         label.setForeground(textColor);
-        Font font = new Font("Arial", Font.BOLD, 28);
+        Font font = new Font(Settings.getFontName(), Font.BOLD, 28);
         label.setFont(font);
         
 		contentPanel.add(label);
 		
-        reminderFrame = new JFrame(title);
+        reminderFrame = new JFrame("Break Reminder");
 		reminderFrame.add(contentPanel);
 		reminderFrame.setSize(300, 80);
 		
 		reminderFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	}
+	
 	public void SetTime(final int secondsLeft)
 	{
-		label.setText("Break over " + secondsLeft + "s");
+		label.setText("Break over " + secondsLeft + "...");
 	}
+	
 	public void Open()
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -54,6 +56,7 @@ public class Reminder {
 		reminderFrame.setLocation((int)xpos - (reminderFrame.getSize().width / 2), (int)ypos - (reminderFrame.getSize().height/ 2));
 		reminderFrame.setVisible(true);
 	}
+	
 	@SuppressWarnings("deprecation")
 	public void Close()
 	{

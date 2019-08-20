@@ -54,14 +54,7 @@ public class Settings {
 	
 	Color bgColor; 
 	Color textColor;
-
-	void SetupPrefs()
-	{
-		sun.util.logging.PlatformLogger platformLogger = sun.util.logging.PlatformLogger.getLogger("java.util.prefs");
-		platformLogger.setLevel(sun.util.logging.PlatformLogger.Level.OFF);
-		
-		prefs = Preferences.userNodeForPackage(com.rijkv.breaktimer.Settings.class);
-	}
+	
 	public Settings(String title) {
 		SetupPrefs();
 		
@@ -145,50 +138,21 @@ public class Settings {
 		settingsFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		Load();
 	}
+	
 	public void Open()
 	{
 		settingsFrame.setVisible(true);
 	}
-	public static int getTimeBetweenBreak()
+	
+	void SetupPrefs()
 	{
-		return Integer.parseInt(prefs.get(TIME_BETWEEN_BREAK_NAME, "0"));
+		sun.util.logging.PlatformLogger platformLogger = sun.util.logging.PlatformLogger.getLogger("java.util.prefs");
+		platformLogger.setLevel(sun.util.logging.PlatformLogger.Level.OFF);
+		
+		prefs = Preferences.userNodeForPackage(com.rijkv.breaktimer.Settings.class);
 	}
-	public static Color getFGColor()
-	{
-		return Color.decode(prefs.get(FG_COLOR, "-1"));
-	}
-	public static Color getBGColor()
-	{
-		return Color.decode(prefs.get(BG_COLOR, "-1"));
-	}
-	public static int getSkipTime()
-	{
-		return Integer.parseInt(prefs.get(SKIP_TIME, "0"));
-	}
-	public static String getTimeRange()
-	{
-		return prefs.get(TIME_RANGE, "");
-	}
-	public static String getReminderTime()
-	{
-		return prefs.get(REMINDER_TIME, "20");
-	}
-	public static int getBreakDuration()
-	{
-		return Integer.parseInt(prefs.get(BREAK_DURATION_NAME, "0"));
-	}
-	public static String getBreakTitleText()
-	{
-		return prefs.get(BREAK_TITLE_TEXT, "Break");
-	}
-	public static String getBreakText()
-	{
-		return prefs.get(BREAK_TEXT, "Have a nice break!");
-	}
-	public static String getFontName()
-	{
-		return prefs.get(FONT_NAME, "Arial");
-	}
+	
+
 	private void Load()
 	{
 		timeTextField.setText(prefs.get(TIME_BETWEEN_BREAK_NAME, "0"));
@@ -202,6 +166,7 @@ public class Settings {
 		breakTextTextField.setText(prefs.get(BREAK_TEXT, "Have a nice break!"));
 		fontNameTextField.setText(prefs.get(FONT_NAME, "Arial"));
 	}
+	
 	@SuppressWarnings("deprecation")
 	private void Save()
 	{
@@ -229,6 +194,9 @@ public class Settings {
 		prefs.put(TIME_RANGE, timeRangeTextField.getText());
 	  	settingsFrame.hide();
 	}
+	
+	// Utilities
+	
 	public static boolean isNumeric(String str) { 
 		  try {  
 		    Double.parseDouble(str);  
@@ -236,29 +204,8 @@ public class Settings {
 		  } catch(NumberFormatException e){  
 		    return false;  
 		  }  
-		}
-	private JButton CreateButton(JButton button, String text)
-	{
-		button = new JButton(text);
-		button.setForeground(textColor);
-		button.setBackground(bgColor);
-		return button;
 	}
-	private JFormattedTextField CreateTextField(JFormattedTextField textField, String text)
-	{
-		ShowLabel(text);
-		textField = new JFormattedTextField();
-		textField.setForeground(textColor);
-		textField.setBackground(bgColor);
-		panel.add(textField);
-		return textField;
-	}
-	private void ShowLabel(String text)
-	{
-		JLabel label = new JLabel(text);
-		label.setForeground(textColor);
-		panel.add(label);
-	}
+	
 	private void RestartApplication()
 	{
 		final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
@@ -287,5 +234,87 @@ public class Settings {
 		  e.printStackTrace();
 		}
 		  System.exit(0);
+	}
+	
+	// UI Shortcuts
+	
+	private void ShowLabel(String text)
+	{
+		JLabel label = new JLabel(text);
+		label.setForeground(textColor);
+		panel.add(label);
+	}
+	
+	private JButton CreateButton(JButton button, String text)
+	{
+		button = new JButton(text);
+		button.setForeground(textColor);
+		button.setBackground(bgColor);
+		return button;
+	}
+	
+	private JFormattedTextField CreateTextField(JFormattedTextField textField, String text)
+	{
+		ShowLabel(text);
+		textField = new JFormattedTextField();
+		textField.setForeground(textColor);
+		textField.setBackground(bgColor);
+		panel.add(textField);
+		return textField;
+	}
+	
+	
+	// Getters
+	
+	public static int getTimeBetweenBreak()
+	{
+		return Integer.parseInt(prefs.get(TIME_BETWEEN_BREAK_NAME, "0"));
+	}
+	
+	public static Color getFGColor()
+	{
+		return Color.decode(prefs.get(FG_COLOR, "-1"));
+	}
+	
+	
+	public static Color getBGColor()
+	{
+		return Color.decode(prefs.get(BG_COLOR, "-1"));
+	}
+	
+	
+	public static int getSkipTime()
+	{
+		return Integer.parseInt(prefs.get(SKIP_TIME, "0"));
+	}
+	
+	public static String getTimeRange()
+	{
+		return prefs.get(TIME_RANGE, "");
+	}
+	
+	public static String getReminderTime()
+	{
+		return prefs.get(REMINDER_TIME, "20");
+	}
+	
+	public static int getBreakDuration()
+	{
+		return Integer.parseInt(prefs.get(BREAK_DURATION_NAME, "0"));
+	}
+	
+	public static String getBreakTitleText()
+	{
+		return prefs.get(BREAK_TITLE_TEXT, "Break");
+	}
+	
+	public static String getBreakText()
+	{
+		return prefs.get(BREAK_TEXT, "Have a nice break!");
+	}
+	
+	public static String getFontName()
+	{
+		return prefs.get(FONT_NAME, "Arial");
 	}
 }

@@ -8,17 +8,21 @@ import org.jnativehook.GlobalScreen;
 
 public class Main {
 
-	@SuppressWarnings("unused")
 	public static void main(String[] args) {
+		// No jnativehook logging
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
 		logger.setLevel(Level.OFF);
 		
+		// Startup command line argument
 		if (Arrays.stream(args).anyMatch("startup"::equals))
 		{
-			BreakTimer breakTimer = new BreakTimer("Break Timer [STARTUP]");
+			BreakTimer breakTimer = new BreakTimer();
 			breakTimer.Hide();
-		} else {
-			BreakTimer breakTimer = new BreakTimer("Break Timer");
+		} 
+		else 
+		{
+			@SuppressWarnings("unused")
+			BreakTimer breakTimer = new BreakTimer();
 		}
 	}
 

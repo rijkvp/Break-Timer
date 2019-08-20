@@ -46,10 +46,9 @@ public class Break implements Runnable {
 	private final static String[] TITLES = { "Time for a break!", "BREAK!", "Break.", "Just a normal break.", "Another break", "KAERB|BREAK" };
 	private final static String[] DESCRIPTIONS = { "Walk away! NOW!! OR...", "Let's move away!", "Just walk away from your pc.", "Time for a drink!", "Don't look at this screen!" };
 	
-	public Break(String title, Countdown countdown) {
+	public Break(Countdown countdown) {
 		refCountdown = countdown;		
-		
-		
+				
 		contentPanel = new JPanel();
 		contentPanel.setBounds(0, 400, 400, 400);
 		
@@ -58,8 +57,7 @@ public class Break implements Runnable {
 		gridLayout.setVgap(10);
         panel.setLayout(gridLayout);
         contentPanel.add(panel);
-        
-        
+                
        
         label = new JLabel("not set", SwingConstants.CENTER);
 		panel.add(label);		
@@ -70,17 +68,16 @@ public class Break implements Runnable {
 		breakText = new JLabel("not set", SwingConstants.CENTER);
 		panel.add(breakText);
 		
-		
-		
-        breakFrame = new JFrame(title);
+				
+        breakFrame = new JFrame("Break");
 		breakFrame.add(contentPanel);
 		breakFrame.setSize(600, 400);
 		
 		breakFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
 		// Always on top 
-		int sta = breakFrame.getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL;
-		breakFrame.setExtendedState(sta);
+		int state = breakFrame.getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL;
+		breakFrame.setExtendedState(state);
 		breakFrame.setAlwaysOnTop(true);
 		breakFrame.toFront();
 		breakFrame.requestFocus();
@@ -115,15 +112,18 @@ public class Break implements Runnable {
 	        public void keyReleased(KeyEvent e) { }
 	    });
 	}
+	
 	private void ForceStop()
 	{
 		if (refCountdown.CanSkip())
 			refCountdown.ForceStop();
 	}
+	
 	public void SetTime(int time)
 	{
 		timeLabel.setText(Countdown.formatHHMMSS(time));
 	}
+	
 	public void Open()
 	{
 		escPressed = false;
@@ -136,6 +136,14 @@ public class Break implements Runnable {
 		isOpen = true;
 		new Thread(this).start();
 	}
+	
+	@SuppressWarnings("deprecation")
+	public void Close()
+	{
+		isOpen = false;
+		breakFrame.hide();
+	}
+	
 	private void UpdateGUI()
 	{
 		GetColors();
@@ -159,6 +167,7 @@ public class Break implements Runnable {
 		contentPanel.setFont(font);
 		breakText.setFont(label.getFont().deriveFont (34.0f));
 	}
+	
 	private String GetTitle()
 	{
 		if (!RANDOM_MODE)
@@ -172,6 +181,7 @@ public class Break implements Runnable {
         	return TITLES[randomIndex];
 		}
 	}
+	
 	private String GetDescription()
 	{
 		if (!RANDOM_MODE)
@@ -185,6 +195,7 @@ public class Break implements Runnable {
         	return DESCRIPTIONS[randomIndex];
 		}
 	}
+	
 	private Font GetFont()
 	{
 		if (!RANDOM_MODE)
@@ -267,14 +278,9 @@ public class Break implements Runnable {
 		    }
 		}
 	}
-	@SuppressWarnings("deprecation")
-	public void Close()
-	{
-		isOpen = false;
-		breakFrame.hide();
-	}
 	
-	 private void releaseKeys(Robot robot) {
+	
+	private void releaseKeys(Robot robot) {
 	    robot.keyRelease(17);
 	    robot.keyRelease(18);
 	    robot.keyRelease(127);
@@ -282,7 +288,7 @@ public class Break implements Runnable {
 	    robot.keyRelease(9);
 	  }
 	
-	  private void sleep(long millis) {
+	private void sleep(long millis) {
 	    try {
 	      Thread.sleep(millis);
 	    } catch (Exception e) {
@@ -290,15 +296,14 @@ public class Break implements Runnable {
 	    }
 	  }
 	
-	  private void kill(String string) {
+	private void kill(String string) {
 	    try {
 	      Runtime.getRuntime().exec("taskkill /F /IM " + string).waitFor();
 	    } catch (Exception e) {
 	    }
 	  }
 	
-	  private void focus() {
-	  //  this.frame.grabFocus();
+	private void focus() {
 	    this.breakFrame.requestFocus();
 	  }
 }
