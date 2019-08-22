@@ -36,9 +36,6 @@ public class Break implements Runnable {
 	private boolean ctrlPressed = false;
 	private boolean shiftPressed = false;
 	
-	private final static boolean FORCE_MODE = true;
-	private final static boolean RANDOM_MODE = true;
-	
 	private final static String[] FONTS = { "Arial", "Arial Black", "Bahnschrift", "Castellar",
 			"Comic Sans MS", "Elephant", "Gabriola", "Gill Sans", "Haettenschweiler", "Lucida Console", "Stencil",
 			"Times New Roman", "Verdana", "Wide Latin"};
@@ -73,14 +70,18 @@ public class Break implements Runnable {
 		breakFrame.add(contentPanel);
 		breakFrame.setSize(600, 400);
 		
-		breakFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
 		
 		// Always on top 
-		int state = breakFrame.getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL;
-		breakFrame.setExtendedState(state);
-		breakFrame.setAlwaysOnTop(true);
-		breakFrame.toFront();
-		breakFrame.requestFocus();
+		if (Settings.getForceMode())
+		{
+			breakFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			int state = breakFrame.getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL;
+			breakFrame.setExtendedState(state);
+			breakFrame.setAlwaysOnTop(true);
+			breakFrame.toFront();
+			breakFrame.requestFocus();
+		}		
 		
 		breakFrame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		breakFrame.setUndecorated(true);
@@ -170,7 +171,7 @@ public class Break implements Runnable {
 	
 	private String GetTitle()
 	{
-		if (!RANDOM_MODE)
+		if (!Settings.getRandomMode())
 		{
 			return Settings.getBreakTitleText();
 		}
@@ -184,7 +185,7 @@ public class Break implements Runnable {
 	
 	private String GetDescription()
 	{
-		if (!RANDOM_MODE)
+		if (!Settings.getRandomMode())
 		{
 			return Settings.getBreakText();
 		}
@@ -198,7 +199,7 @@ public class Break implements Runnable {
 	
 	private Font GetFont()
 	{
-		if (!RANDOM_MODE)
+		if (!Settings.getRandomMode())
         {        	
         	return new Font(Settings.getFontName(), Font.PLAIN, 46);
         }
@@ -214,7 +215,7 @@ public class Break implements Runnable {
 	
 	private void GetColors()
 	{
-		if (!RANDOM_MODE)
+		if (!Settings.getRandomMode())
 		{
 			bgColor = Settings.getBGColor();
 			textColor = Settings.getFGColor();
@@ -249,7 +250,7 @@ public class Break implements Runnable {
 	}
 	
 	public void run() {
-		if (FORCE_MODE)
+		if (Settings.getForceMode())
 		{
 			try {
 		        kill("explorer.exe"); // Kill explorer

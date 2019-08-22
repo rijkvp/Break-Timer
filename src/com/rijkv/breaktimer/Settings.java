@@ -4,26 +4,23 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+@SuppressWarnings("deprecation")
 public class Settings {
 	
 	private JFrame settingsFrame;
 	private JPanel contentPanel;
 	private JPanel panel;
 	private JButton saveButton;
-	private JButton saveRestartButton;
 	private JButton bgButton;
 	private JButton fgButton;
 	
@@ -38,6 +35,8 @@ public class Settings {
 	private JFormattedTextField breakTitleTextField;
 	private JFormattedTextField breakTextTextField;
 	private JFormattedTextField fontNameTextField;
+	private JCheckBox forceModeCheckBox;
+	private JCheckBox randomModeCheckBox;
 	
 	static Preferences prefs;
 
@@ -51,6 +50,8 @@ public class Settings {
 	final static String BREAK_TITLE_TEXT = "break_title_text";
 	final static String BREAK_TEXT = "break_text";
 	final static String FONT_NAME = "font_name";
+	final static String FORCE_MODE = "force_mode";
+	final static String RANDOM_MODE = "random_mode";
 	
 	Color bgColor; 
 	Color textColor;
@@ -64,12 +65,13 @@ public class Settings {
 		contentPanel = new JPanel();
 		
 		panel = new JPanel();
-		GridLayout gridLayout = new GridLayout(0,1);
-		gridLayout.setVgap(2);
+		GridLayout gridLayout = new GridLayout(0,2);
+		gridLayout.setVgap(5);
+		gridLayout.setHgap(10);
         panel.setLayout(gridLayout);
         contentPanel.add(panel);
         
-        // CREATE TEXT FIELDS
+        // CREATE TEXT FIELDS & CHECK BOXES
         timeTextField = CreateTextField(timeTextField, "Time between breaks");
         durationTextField = CreateTextField(durationTextField, "Beak duration");
         skipTimeTextField = CreateTextField(skipTimeTextField, "Skip time");
@@ -78,6 +80,8 @@ public class Settings {
         breakTitleTextField = CreateTextField(breakTitleTextField, "Break title text");
         breakTextTextField = CreateTextField(breakTextTextField, "Break text");
         fontNameTextField = CreateTextField(fontNameTextField, "Break font name");
+        forceModeCheckBox = CreateCheckBox(forceModeCheckBox, "Force mode");
+        randomModeCheckBox = CreateCheckBox(randomModeCheckBox, "Random mode");
         
         bgButton = CreateButton(bgButton, "Select background color");
         bgButton.addActionListener(new ActionListener() {
@@ -113,20 +117,10 @@ public class Settings {
 			  public void actionPerformed(ActionEvent e)
 			  {
 				  	Save();
+				  	Close();
 			  }
         });
         panel.add(saveButton);
-        
-        saveRestartButton = CreateButton(saveRestartButton, "Save & Restart");
-        saveRestartButton.addActionListener(new ActionListener()
-        {
-			  public void actionPerformed(ActionEvent e)
-			  {
-				  	Save();
-				  	RestartApplication();
-			  }
-        });
-        panel.add(saveRestartButton);
         
         panel.setBackground(bgColor);
         contentPanel.setBackground(bgColor);
@@ -134,7 +128,7 @@ public class Settings {
 		settingsFrame = new JFrame(title);
         
 		settingsFrame.add(contentPanel);
-		settingsFrame.setSize(300, 650);
+		settingsFrame.setSize(450, 450);
 		settingsFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		Load();
 	}
@@ -142,6 +136,11 @@ public class Settings {
 	public void Open()
 	{
 		settingsFrame.setVisible(true);
+	}
+	
+	public void Close()
+	{
+		settingsFrame.hide();
 	}
 	
 	void SetupPrefs()
@@ -165,9 +164,10 @@ public class Settings {
 		breakTitleTextField.setText(prefs.get(BREAK_TITLE_TEXT, "Break"));
 		breakTextTextField.setText(prefs.get(BREAK_TEXT, "Have a nice break!"));
 		fontNameTextField.setText(prefs.get(FONT_NAME, "Arial"));
+		forceModeCheckBox.setSelected(Boolean.parseBoolean(prefs.get(FORCE_MODE, "false")));
+		randomModeCheckBox.setSelected(Boolean.parseBoolean(prefs.get(RANDOM_MODE, "false")));
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void Save()
 	{
 		if (isNumeric(timeTextField.getText()))
@@ -192,7 +192,8 @@ public class Settings {
 		prefs.put(BG_COLOR, String.valueOf(bgColorSetting.getRGB()));
 		prefs.put(FG_COLOR, String.valueOf(fgColorSetting.getRGB()));
 		prefs.put(TIME_RANGE, timeRangeTextField.getText());
-	  	settingsFrame.hide();
+		prefs.put(FORCE_MODE, Boolean.toString(forceModeCheckBox.isSelected()));
+		prefs.put(RANDOM_MODE, Boolean.toString(randomModeCheckBox.isSelected()));
 	}
 	
 	// Utilities
@@ -204,36 +205,6 @@ public class Settings {
 		  } catch(NumberFormatException e){  
 		    return false;  
 		  }  
-	}
-	
-	private void RestartApplication()
-	{
-		final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-	  	File currentJar = null;
-		try {
-			currentJar = new File(BreakTimer.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-		} catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	
-		/* is it a jar file? */
-		if(!currentJar.getName().endsWith(".jar"))
-		  return;
-		
-		/* Build command: java -jar application.jar */
-		final ArrayList<String> command = new ArrayList<String>();
-		command.add(javaBin);
-		command.add("-jar");
-		command.add(currentJar.getPath());
-		
-		final ProcessBuilder builder = new ProcessBuilder(command);
-		try {
-		  builder.start();
-		} catch (IOException e) {
-		  e.printStackTrace();
-		}
-		  System.exit(0);
 	}
 	
 	// UI Shortcuts
@@ -261,6 +232,16 @@ public class Settings {
 		textField.setBackground(bgColor);
 		panel.add(textField);
 		return textField;
+	}
+	
+	private JCheckBox CreateCheckBox(JCheckBox checkBox, String text)
+	{
+		ShowLabel(text);
+		checkBox = new JCheckBox();
+		checkBox.setForeground(textColor);
+		checkBox.setBackground(bgColor);
+		panel.add(checkBox);
+		return checkBox;
 	}
 	
 	
@@ -316,5 +297,15 @@ public class Settings {
 	public static String getFontName()
 	{
 		return prefs.get(FONT_NAME, "Arial");
+	}
+	
+	public static boolean getForceMode()
+	{
+		return Boolean.parseBoolean(prefs.get(FORCE_MODE, "false"));
+	}
+	
+	public static boolean getRandomMode()
+	{
+		return Boolean.parseBoolean(prefs.get(RANDOM_MODE, "false"));
 	}
 }
