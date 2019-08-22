@@ -3,10 +3,12 @@ A program that forces you to take breaks.
 
 ## Pictures
 
-![](https://github.com/Rijk-van-Putten/java_break_timer/blob/master/pics/demo%202.jpg)
-![](https://github.com/Rijk-van-Putten/java_break_timer/blob/master/pics/demo%201.jpg)
-![](https://github.com/Rijk-van-Putten/java_break_timer/blob/master/pics/demo%204.jpg)
-![](https://github.com/Rijk-van-Putten/java_break_timer/blob/master/pics/demo%203.jpg)
+![](/pics/demo%201.jpg)
+![](/pics/demo%202.jpg)
+![](/pics/demo%205.jpg)
+![](/pics/demo%206.jpg)
+![](/pics/demo%203.jpg)
+![](/pics/demo%204.jpg)
 
 ## Download
 1. Download the [lastest release](https://github.com/Rijk-van-Putten/Break_Timer/blob/master/build/build%202.jar) or the [testbuild](https://github.com/Rijk-van-Putten/java_break_timer/blob/master/testbuild/testbuild.jar).
