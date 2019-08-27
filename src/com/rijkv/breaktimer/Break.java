@@ -224,12 +224,12 @@ public class Break implements Runnable {
 		{
 			Random rand = new Random();
 			
-			float r = rand.nextFloat();
-			float g = rand.nextFloat();
-			float b = rand.nextFloat();
+			float r = rand.nextFloat() / 2f;
+			float g = rand.nextFloat() / 2f;
+			float b = rand.nextFloat() / 2f;
 			Color darkColor = new Color(r, g, b);
 			
-			float r_light = rand.nextFloat() / 2f + 0.5f;
+			float r_light = rand.nextFloat() / 2f + 0.5f; // 0.5-1
 			float g_light = rand.nextFloat() / 2f + 0.5f;
 			float b_light = rand.nextFloat() / 2f + 0.5f;
 			Color lightColor = new Color(r_light, g_light, b_light);

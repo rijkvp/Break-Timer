@@ -36,7 +36,7 @@ public class BreakTimer {
 		gridLayout.setVgap(10);
         panel.setLayout(gridLayout);
        
-        timeLabel = new JLabel("Break Over: ..s");
+        timeLabel = new JLabel("Break over: ...:...");
         timeLabel.setFont(timeLabel.getFont ().deriveFont (24.0f));
         timeLabel.setForeground(textColor);
 

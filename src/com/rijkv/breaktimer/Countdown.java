@@ -108,11 +108,16 @@ public class Countdown {
                 		else
                 			inactiveTime++;
                 		
-                		if (!(inactiveTime > maxInactiveTime))
-                			countdown--;
+                		
                 		
                 		if (CheckTime())
                     	{
+                			if (inactiveTime <= maxInactiveTime)
+                    			countdown--;
+                			
+                			if (inactiveTime >= Settings.getBreakDuration())
+                				Reset();
+                			
                     		reminderTime = Integer.parseInt(Settings.getReminderTime());
                     		if (countdown <= reminderTime)
                         	{
@@ -139,6 +144,14 @@ public class Countdown {
                 }
             }
         }, delay, period);
+	}
+	
+
+	private void Reset()
+	{
+		state = CountdownState.Countdown;
+		countdown = Settings.getTimeBetweenBreak();
+		breakWindow.Close();
 	}
 	
 	public void BreakNow()
@@ -228,6 +241,7 @@ public class Countdown {
 		}
 		Start();
 	}
+	
 	
 	public static String formatHHMMSS(long secondsCount){
 	    int seconds = (int) (secondsCount % 60);
