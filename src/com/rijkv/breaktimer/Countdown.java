@@ -25,13 +25,14 @@ public class Countdown {
 	private JLabel currentLabel;
 	
 	private Break breakWindow = new Break(this);
-	private Reminder reminder = new Reminder();
+	private Reminder reminder = new Reminder(this);
 	
 	private int reminderTime = 20;
 	private boolean didReminder = false;
 	
 	private MouseListener mouseListener;
 	private KeyListener keyListener;
+	private boolean didDelay = false;
 	
 	public Countdown() {
 		try {
@@ -69,10 +70,10 @@ public class Countdown {
 		switch(state)
 		{
 			case Break:
-				currentLabel.setText("Break " + formatHHMMSS(countdown));
+				currentLabel.setText("BREAK " + formatHHMMSS(countdown));
 				break;
 			case Countdown:
-				currentLabel.setText("Break over " + formatHHMMSS(countdown));
+				currentLabel.setText("BREAK OVER " + formatHHMMSS(countdown));
 				break;
 			default:
 				break;
@@ -84,6 +85,21 @@ public class Countdown {
 		state = CountdownState.Countdown;
 		countdown = Settings.getTimeBetweenBreak();
 		Start();
+	}
+	
+	public void Delay(int seconds)
+	{
+		if (!didDelay)
+		{			
+			countdown += seconds;
+			didDelay = true;
+			didReminder = false;
+		}
+	}
+	
+	public boolean canDelay()
+	{
+		return !didDelay;
 	}
 	
 	private void Start()
@@ -107,7 +123,6 @@ public class Countdown {
                 			inactiveTime = 0;
                 		else
                 			inactiveTime++;
-                		
                 		
                 		
                 		if (CheckTime())
@@ -151,6 +166,7 @@ public class Countdown {
 	{
 		state = CountdownState.Countdown;
 		countdown = Settings.getTimeBetweenBreak();
+		didReminder = false;
 		breakWindow.Close();
 	}
 	
@@ -222,6 +238,7 @@ public class Countdown {
 				state = CountdownState.Countdown;
 				countdown = Settings.getTimeBetweenBreak();
 				breakWindow.Close();
+				didDelay = false;
 				break;
 			case Countdown:
 				if (CheckTime()) {
@@ -234,6 +251,7 @@ public class Countdown {
 					countdown = Settings.getTimeBetweenBreak();
 					breakWindow.Close();
 					didReminder = true;
+					// TODO: Actually close program if out of time range
 				}
 				break;
 			default:

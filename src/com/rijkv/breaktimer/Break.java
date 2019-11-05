@@ -4,9 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,24 +27,20 @@ public class Break implements Runnable {
 	private JLabel label;
 	private JLabel timeLabel;
 	private JLabel breakText;
-	
-	private Color bgColor = Color.BLACK;
-	private Color textColor = Color.WHITE;
+	private JButton skipButton;
 	
 	private Countdown refCountdown;
 	
 	private boolean isOpen = false;
 	
-	private boolean escPressed = false;
-	private boolean ctrlPressed = false;
-	private boolean shiftPressed = false;
 	
 	private final static String[] FONTS = { "Arial", "Arial Black", "Bahnschrift", "Castellar",
-			"Comic Sans MS", "Elephant", "Gabriola", "Gill Sans", "Haettenschweiler", "Lucida Console", "Stencil",
+			"Elephant", "Gabriola", "Gill Sans", "Haettenschweiler", "Lucida Console", "Stencil",
 			"Times New Roman", "Verdana", "Wide Latin"};
 	
 	private final static String[] TITLES = { "Time for a break!", "BREAK!", "Break.", "Just a normal break.", "Another break", "KAERB|BREAK" };
 	private final static String[] DESCRIPTIONS = { "Walk away! NOW!! OR...", "Let's move away!", "Just walk away from your pc.", "Time for a drink!", "Don't look at this screen!" };
+
 	
 	public Break(Countdown countdown) {
 		refCountdown = countdown;		
@@ -65,12 +64,19 @@ public class Break implements Runnable {
 		breakText = new JLabel("not set", SwingConstants.CENTER);
 		panel.add(breakText);
 		
+		skipButton = new JButton("SKIP"); 
+		skipButton.addActionListener(new ActionListener()
+        {
+	          public void actionPerformed(ActionEvent e)
+	          {
+	        	  ForceStop();
+	          }
+        });
+		panel.add(skipButton);
 				
         breakFrame = new JFrame("Break");
 		breakFrame.add(contentPanel);
 		breakFrame.setSize(600, 400);
-		
-		
 		
 		// Always on top 
 		if (Settings.getForceMode())
@@ -86,32 +92,8 @@ public class Break implements Runnable {
 		breakFrame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		breakFrame.setUndecorated(true);
 		
-		panel.setBackground(bgColor);
-		contentPanel.setBackground(bgColor);
-		
-		breakFrame.addKeyListener(new KeyListener() {
-	        @Override
-	        public void keyTyped(KeyEvent e) { }
-
-	        @Override
-	        public void keyPressed(KeyEvent e) {
-	        	if (e.getKeyCode() == KeyEvent.VK_SHIFT)
-	            {
-	            	shiftPressed = true;
-	            }
-	            if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-	            {
-	            	escPressed = true;
-	            }
-	            if (e.getKeyCode() == KeyEvent.VK_CONTROL)
-	            {
-	            	ctrlPressed = true;
-	            }
-	        }
-
-	        @Override
-	        public void keyReleased(KeyEvent e) { }
-	    });
+		panel.setBackground(ResourceLoader.getBGColor());
+		contentPanel.setBackground(ResourceLoader.getBGColor());
 	}
 	
 	private void ForceStop()
@@ -123,14 +105,18 @@ public class Break implements Runnable {
 	public void SetTime(int time)
 	{
 		timeLabel.setText(Countdown.formatHHMMSS(time));
+		if (refCountdown.CanSkip())
+		{
+			panel.add(skipButton);
+		}
+		else
+		{
+			panel.remove(skipButton);
+		}
 	}
 	
 	public void Open()
 	{
-		escPressed = false;
-		ctrlPressed = false;
-		shiftPressed = false;
-		
 		UpdateGUI();
 		
 		breakFrame.setVisible(true);
@@ -149,24 +135,29 @@ public class Break implements Runnable {
 	{
 		GetColors();
 		Font font = GetFont();
+		System.out.println("NAME " + font.getName());
 		String title = GetTitle();
 		String description = GetDescription();
 		
 		label.setText(title);
-		label.setForeground(textColor);
+		label.setForeground(ResourceLoader.getTextColor());
 		label.setFont(font);
 		label.setFont(label.getFont ().deriveFont (128.0f));
-		timeLabel.setForeground(textColor);
+		timeLabel.setForeground(ResourceLoader.getTextColor());
 		timeLabel.setFont(font);
 		timeLabel.setFont(timeLabel.getFont ().deriveFont (40.0f));
 		breakText.setText(description);
-		breakText.setForeground(textColor);
+		breakText.setForeground(ResourceLoader.getTextColor());
 		breakText.setFont(font);
-		panel.setBackground(bgColor);
+		panel.setBackground(ResourceLoader.getBGColor());
 		panel.setFont(font);
-		contentPanel.setBackground(bgColor);
+		contentPanel.setBackground(ResourceLoader.getBGColor());
 		contentPanel.setFont(font);
 		breakText.setFont(label.getFont().deriveFont (34.0f));
+		skipButton.setFont(font);
+		skipButton.setBackground(ResourceLoader.getBGColor());
+		skipButton.setForeground(ResourceLoader.getTextColor());
+		skipButton.setFont(ResourceLoader.getDefaultBoldFont(18));
 	}
 	
 	private String GetTitle()
@@ -200,8 +191,8 @@ public class Break implements Runnable {
 	private Font GetFont()
 	{
 		if (!Settings.getRandomMode())
-        {        	
-        	return new Font(Settings.getFontName(), Font.PLAIN, 46);
+		{        	// TODO: Add custom break font setting back
+			return ResourceLoader.getDefaultFont(46);
         }
         else
         {
@@ -215,10 +206,13 @@ public class Break implements Runnable {
 	
 	private void GetColors()
 	{
+		// TODO: FIX RANDOM MODE FONTS
+		Color bgColor;
+		Color textColor;
 		if (!Settings.getRandomMode())
 		{
-			bgColor = Settings.getBGColor();
-			textColor = Settings.getFGColor();
+			bgColor = ResourceLoader.getBGColor();
+			textColor = ResourceLoader.getTextColor();
 		}
 		else
 		{
@@ -258,10 +252,6 @@ public class Break implements Runnable {
 		        Robot robot = new Robot();
 		        int i = 0;
 		        while (isOpen) {
-		        	if (ctrlPressed && escPressed && shiftPressed)
-		            {
-		            	ForceStop();
-		            }
 		           sleep(30L);
 		           focus();
 		           releaseKeys(robot);

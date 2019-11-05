@@ -1,6 +1,8 @@
 package com.rijkv.breaktimer;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
@@ -11,44 +13,108 @@ public class Reminder {
 	private JPanel contentPanel;
 	private JPanel panel;
 	private JLabel label;
+	private JButton delay1Button;
+	private JButton delay2Button;
+	private JButton delay3Button;
 	
-
-	public Reminder() {		
-		Color bgColor = Settings.getBGColor();
-		Color textColor = Settings.getFGColor();
+	private Countdown countdown;
+	
+	public Reminder(Countdown cd) {		
+		countdown = cd;		
 		
 		contentPanel = new JPanel();
-		contentPanel.setBackground(bgColor);
+		contentPanel.setBackground(ResourceLoader.getBGColor());
 		contentPanel.setBounds(0, 400, 400, 400);
 		
 		panel = new JPanel();
 		GridLayout gridLayout = new GridLayout(0,1);
 		gridLayout.setVgap(10);
         panel.setLayout(gridLayout);
-        panel.setBackground(bgColor);
+        panel.setBackground(ResourceLoader.getBGColor());
         contentPanel.add(panel);
         
         label = new JLabel("not set", SwingConstants.CENTER);
-        label.setForeground(textColor);
+        label.setForeground(ResourceLoader.getTextColor());
         Font font = new Font(Settings.getFontName(), Font.BOLD, 28);
         label.setFont(font);
         
+        delay1Button = new JButton("DELAY 1 MINUTE");
+        delay1Button.setMargin(new Insets(8, 12, 8, 12));
+        delay1Button.setBackground(ResourceLoader.getBGColor());
+        delay1Button.setForeground(ResourceLoader.getTextColor());
+        delay1Button.setBorder(ResourceLoader.getDefaultButtonBorder());
+        delay1Button.setFont(ResourceLoader.getDefaultBoldFont(16));
+        delay1Button.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+          	  countdown.Delay(60);
+          	  Close();
+            }
+        });
+        
+        delay2Button = new JButton("DELAY 3 MINUTES");
+        delay2Button.setMargin(new Insets(8, 12, 8, 12));
+        delay2Button.setBackground(ResourceLoader.getBGColor());
+        delay2Button.setForeground(ResourceLoader.getTextColor());
+        delay2Button.setBorder(ResourceLoader.getDefaultButtonBorder());
+        delay2Button.setFont(ResourceLoader.getDefaultBoldFont(16));
+        delay2Button.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+          	  countdown.Delay(60 * 3);
+          	  Close();
+            }
+        });
+        
+        delay3Button = new JButton("DELAY 5 MINUTES");
+        delay3Button.setMargin(new Insets(8, 12, 8, 12));
+        delay3Button.setBackground(ResourceLoader.getBGColor());
+        delay3Button.setForeground(ResourceLoader.getTextColor());
+        delay3Button.setBorder(ResourceLoader.getDefaultButtonBorder());
+        delay3Button.setFont(ResourceLoader.getDefaultBoldFont(16));
+        delay3Button.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+          	  countdown.Delay(60 * 5);
+          	  Close();
+            }
+        });
+        
 		contentPanel.add(label);
+		contentPanel.add(delay1Button);
+		contentPanel.add(delay2Button);
+		contentPanel.add(delay3Button);
 		
         reminderFrame = new JFrame("Break Reminder");
 		reminderFrame.add(contentPanel);
-		reminderFrame.setSize(300, 80);
+		reminderFrame.setSize(300, 200);
 		
 		reminderFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	}
 	
 	public void SetTime(final int secondsLeft)
 	{
-		label.setText("Break over " + secondsLeft + "...");
+		label.setText("BREAK OVER " + secondsLeft + "...");
 	}
 	
 	public void Open()
 	{
+		if (countdown.canDelay())
+		{
+			contentPanel.add(delay1Button);
+			contentPanel.add(delay2Button);
+			contentPanel.add(delay3Button);
+		}
+		else
+		{
+			contentPanel.remove(delay1Button);
+			contentPanel.remove(delay2Button);
+			contentPanel.remove(delay3Button);
+		}
+		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double xpos = screenSize.getWidth() / 2;
 		double ypos = screenSize.getHeight() / 2;

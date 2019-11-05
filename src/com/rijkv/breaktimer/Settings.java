@@ -53,14 +53,9 @@ public class Settings {
 	final static String FORCE_MODE = "force_mode";
 	final static String RANDOM_MODE = "random_mode";
 	
-	Color bgColor; 
-	Color textColor;
 	
 	public Settings(String title) {
 		SetupPrefs();
-		
-		bgColor = getBGColor();
-		textColor = getFGColor();
 		
 		contentPanel = new JPanel();
 		
@@ -72,18 +67,18 @@ public class Settings {
         contentPanel.add(panel);
         
         // CREATE TEXT FIELDS & CHECK BOXES
-        timeTextField = CreateTextField(timeTextField, "Time between breaks");
-        durationTextField = CreateTextField(durationTextField, "Beak duration");
-        skipTimeTextField = CreateTextField(skipTimeTextField, "Skip time");
-        reminderTimeTextField = CreateTextField(skipTimeTextField, "Reminder time");
-        timeRangeTextField = CreateTextField(timeRangeTextField, "Time range");
-        breakTitleTextField = CreateTextField(breakTitleTextField, "Break title text");
-        breakTextTextField = CreateTextField(breakTextTextField, "Break text");
-        fontNameTextField = CreateTextField(fontNameTextField, "Break font name");
-        forceModeCheckBox = CreateCheckBox(forceModeCheckBox, "Force mode");
-        randomModeCheckBox = CreateCheckBox(randomModeCheckBox, "Random mode");
+        timeTextField = CreateTextField(timeTextField, "TIME BETWEEN BREAKS");
+        durationTextField = CreateTextField(durationTextField, "BREAK DURATION");
+        skipTimeTextField = CreateTextField(skipTimeTextField, "SKIP TIME");
+        reminderTimeTextField = CreateTextField(skipTimeTextField, "REMINDER TIME");
+        timeRangeTextField = CreateTextField(timeRangeTextField, "TIME RANGE");
+        breakTitleTextField = CreateTextField(breakTitleTextField, "BREAK TITLE TEXT");
+        breakTextTextField = CreateTextField(breakTextTextField, "BREAK TEXT");
+        fontNameTextField = CreateTextField(fontNameTextField, "BREAK FONT");
+        forceModeCheckBox = CreateCheckBox(forceModeCheckBox, "FORCE MODE");
+        randomModeCheckBox = CreateCheckBox(randomModeCheckBox, "RANDOM MODE");
         
-        bgButton = CreateButton(bgButton, "Select background color");
+        bgButton = CreateButton(bgButton, "BACKGROND COLOR");
         bgButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -97,7 +92,7 @@ public class Settings {
         });
         panel.add(bgButton);
         
-        fgButton = CreateButton(fgButton, "Select foreground color");
+        fgButton = CreateButton(fgButton, "TEXT COLOR");
         fgButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -111,7 +106,7 @@ public class Settings {
         });
         panel.add(fgButton);
         
-        saveButton = CreateButton(saveButton, "Save");
+        saveButton = CreateButton(saveButton, "SAVE");
         saveButton.addActionListener(new ActionListener()
         {
 			  public void actionPerformed(ActionEvent e)
@@ -122,8 +117,8 @@ public class Settings {
         });
         panel.add(saveButton);
         
-        panel.setBackground(bgColor);
-        contentPanel.setBackground(bgColor);
+        panel.setBackground(ResourceLoader.getBGColor());
+        contentPanel.setBackground(ResourceLoader.getBGColor());
         
 		settingsFrame = new JFrame(title);
         
@@ -145,8 +140,8 @@ public class Settings {
 	
 	void SetupPrefs()
 	{
-		sun.util.logging.PlatformLogger platformLogger = sun.util.logging.PlatformLogger.getLogger("java.util.prefs");
-		platformLogger.setLevel(sun.util.logging.PlatformLogger.Level.OFF);
+		//sun.util.logging.PlatformLogger platformLogger = sun.util.logging.PlatformLogger.getLogger("java.util.prefs");
+		//platformLogger.setLevel(sun.util.logging.PlatformLogger.Level.OFF);
 		
 		prefs = Preferences.userNodeForPackage(com.rijkv.breaktimer.Settings.class);
 	}
@@ -163,7 +158,7 @@ public class Settings {
 		fgColorSetting = Color.decode(prefs.get(FG_COLOR, "-1"));
 		breakTitleTextField.setText(prefs.get(BREAK_TITLE_TEXT, "Break"));
 		breakTextTextField.setText(prefs.get(BREAK_TEXT, "Have a nice break!"));
-		fontNameTextField.setText(prefs.get(FONT_NAME, "Arial"));
+		fontNameTextField.setText(prefs.get(FONT_NAME, null));
 		forceModeCheckBox.setSelected(Boolean.parseBoolean(prefs.get(FORCE_MODE, "false")));
 		randomModeCheckBox.setSelected(Boolean.parseBoolean(prefs.get(RANDOM_MODE, "false")));
 	}
@@ -212,15 +207,18 @@ public class Settings {
 	private void ShowLabel(String text)
 	{
 		JLabel label = new JLabel(text);
-		label.setForeground(textColor);
+		label.setFont(ResourceLoader.getDefaultBoldFont(14));
+		label.setForeground(ResourceLoader.getTextColor());
 		panel.add(label);
 	}
 	
 	private JButton CreateButton(JButton button, String text)
 	{
 		button = new JButton(text);
-		button.setForeground(textColor);
-		button.setBackground(bgColor);
+		button.setFont(ResourceLoader.getDefaultBoldFont(16));
+		button.setForeground(ResourceLoader.getTextColor());
+		button.setBackground(ResourceLoader.getBGColor());
+		button.setBorder(ResourceLoader.getDefaultButtonBorder());
 		return button;
 	}
 	
@@ -228,8 +226,9 @@ public class Settings {
 	{
 		ShowLabel(text);
 		textField = new JFormattedTextField();
-		textField.setForeground(textColor);
-		textField.setBackground(bgColor);
+		textField.setForeground(ResourceLoader.getTextColor());
+		textField.setBackground(ResourceLoader.getBGColor());
+		textField.setFont(ResourceLoader.getDefaultFont(14));
 		panel.add(textField);
 		return textField;
 	}
@@ -238,8 +237,8 @@ public class Settings {
 	{
 		ShowLabel(text);
 		checkBox = new JCheckBox();
-		checkBox.setForeground(textColor);
-		checkBox.setBackground(bgColor);
+		checkBox.setForeground(ResourceLoader.getTextColor());
+		checkBox.setBackground(ResourceLoader.getBGColor());
 		panel.add(checkBox);
 		return checkBox;
 	}
@@ -296,7 +295,7 @@ public class Settings {
 	
 	public static String getFontName()
 	{
-		return prefs.get(FONT_NAME, "Arial");
+		return prefs.get(FONT_NAME, null);
 	}
 	
 	public static boolean getForceMode()

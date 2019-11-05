@@ -1,6 +1,5 @@
 package com.rijkv.breaktimer;
 
-import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,9 +24,6 @@ public class BreakTimer {
 	
 	public BreakTimer()
 	{
-		Color bgColor = Settings.getBGColor();
-		Color textColor = Settings.getFGColor();
-		
 		contentPanel = new JPanel();
 		
 		panel = new JPanel();
@@ -36,17 +32,19 @@ public class BreakTimer {
 		gridLayout.setVgap(10);
         panel.setLayout(gridLayout);
        
-        timeLabel = new JLabel("Break over: ...:...");
-        timeLabel.setFont(timeLabel.getFont ().deriveFont (24.0f));
-        timeLabel.setForeground(textColor);
+        timeLabel = new JLabel("BREAK OVER ...:...");
+        timeLabel.setFont(ResourceLoader.getDefaultBoldFont(32f));
+        timeLabel.setForeground(ResourceLoader.getTextColor());
 
         panel.add(timeLabel);
         
         contentPanel.add(panel);
 		
-        settingsButton = new JButton("Settings");
-        settingsButton.setForeground(textColor);
-        settingsButton.setBackground(bgColor);
+        settingsButton = new JButton("SETTINGS");
+        settingsButton.setForeground(ResourceLoader.getTextColor());
+        settingsButton.setBackground(ResourceLoader.getBGColor());
+        settingsButton.setFont(ResourceLoader.getDefaultBoldFont(22f));
+        settingsButton.setBorder(ResourceLoader.getDefaultButtonBorder());
         settingsButton.addActionListener(new ActionListener()
         {
           public void actionPerformed(ActionEvent e)
@@ -56,9 +54,11 @@ public class BreakTimer {
         });
         panel.add(settingsButton);
         
-        JButton breakButton = new JButton("Break Now");
-        breakButton.setForeground(textColor);
-        breakButton.setBackground(bgColor);
+        JButton breakButton = new JButton("BREAK NOW");
+        breakButton.setForeground(ResourceLoader.getTextColor());
+        breakButton.setBackground(ResourceLoader.getBGColor());
+        breakButton.setFont(ResourceLoader.getDefaultBoldFont(22f));
+        breakButton.setBorder(ResourceLoader.getDefaultButtonBorder());
         breakButton.addActionListener(new ActionListener()
         {
           public void actionPerformed(ActionEvent e)
@@ -69,9 +69,11 @@ public class BreakTimer {
         panel.add(breakButton);
 
         
-        JButton quitButton = new JButton("Stop & Quit");
-        quitButton.setForeground(textColor);
-        quitButton.setBackground(bgColor);
+        JButton quitButton = new JButton("QUIT");
+        quitButton.setForeground(ResourceLoader.getTextColor());
+        quitButton.setBackground(ResourceLoader.getBGColor());
+        quitButton.setFont(ResourceLoader.getDefaultBoldFont(22f));
+        quitButton.setBorder(ResourceLoader.getDefaultButtonBorder());
         quitButton.addActionListener(new ActionListener()
         {
           public void actionPerformed(ActionEvent e)
@@ -88,8 +90,8 @@ public class BreakTimer {
 		mainFrame.add(contentPanel);
 		mainFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
-		panel.setBackground(bgColor);
-		contentPanel.setBackground(bgColor);
+		panel.setBackground(ResourceLoader.getBGColor());
+		contentPanel.setBackground(ResourceLoader.getBGColor());
 
         countdown.Setup();
         countdown.SetLabel(timeLabel);
