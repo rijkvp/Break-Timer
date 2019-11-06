@@ -6,16 +6,13 @@ import java.awt.GridLayout;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
-import java.util.Random;
 
 
 public class Break implements Runnable {
@@ -50,7 +47,7 @@ public class Break implements Runnable {
 		
 		panel = new JPanel();
 		GridLayout gridLayout = new GridLayout(0,1);
-		gridLayout.setVgap(10);
+		gridLayout.setVgap(20);
         panel.setLayout(gridLayout);
         contentPanel.add(panel);
                 
@@ -157,7 +154,8 @@ public class Break implements Runnable {
 		skipButton.setFont(font);
 		skipButton.setBackground(ResourceLoader.getBGColor());
 		skipButton.setForeground(ResourceLoader.getTextColor());
-		skipButton.setFont(ResourceLoader.getDefaultBoldFont(18));
+		skipButton.setFont(ResourceLoader.getDefaultBoldFont(26));
+		skipButton.setBorder(ResourceLoader.getDefaultButtonBorder());
 	}
 	
 	private String GetTitle()
@@ -204,6 +202,7 @@ public class Break implements Runnable {
         }
 	}
 	
+	@SuppressWarnings("unused")
 	private void GetColors()
 	{
 		// TODO: FIX RANDOM MODE FONTS

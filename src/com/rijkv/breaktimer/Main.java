@@ -18,7 +18,7 @@ public class Main {
 		if (Arrays.stream(args).anyMatch("startup"::equals))
 		{
 			BreakTimer breakTimer = new BreakTimer();
-			breakTimer.Hide();
+			breakTimer.StartupMode();
 		} 
 		else 
 		{

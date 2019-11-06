@@ -27,7 +27,7 @@ public class Reminder {
 		contentPanel.setBounds(0, 400, 400, 400);
 		
 		panel = new JPanel();
-		GridLayout gridLayout = new GridLayout(0,1);
+		GridLayout gridLayout = new GridLayout(1,1);
 		gridLayout.setVgap(10);
         panel.setLayout(gridLayout);
         panel.setBackground(ResourceLoader.getBGColor());
@@ -38,11 +38,10 @@ public class Reminder {
         Font font = new Font(Settings.getFontName(), Font.BOLD, 28);
         label.setFont(font);
         
-        delay1Button = new JButton("DELAY 1 MINUTE");
-        delay1Button.setMargin(new Insets(8, 12, 8, 12));
+        delay1Button = new JButton("DELAY 1 MINUTE ");
+        delay1Button.setMargin(new Insets(4, 8, 4, 8));
         delay1Button.setBackground(ResourceLoader.getBGColor());
         delay1Button.setForeground(ResourceLoader.getTextColor());
-        delay1Button.setBorder(ResourceLoader.getDefaultButtonBorder());
         delay1Button.setFont(ResourceLoader.getDefaultBoldFont(16));
         delay1Button.addActionListener(new ActionListener()
         {
@@ -54,10 +53,9 @@ public class Reminder {
         });
         
         delay2Button = new JButton("DELAY 3 MINUTES");
-        delay2Button.setMargin(new Insets(8, 12, 8, 12));
+        delay2Button.setMargin(new Insets(4, 8, 4, 8));
         delay2Button.setBackground(ResourceLoader.getBGColor());
         delay2Button.setForeground(ResourceLoader.getTextColor());
-        delay2Button.setBorder(ResourceLoader.getDefaultButtonBorder());
         delay2Button.setFont(ResourceLoader.getDefaultBoldFont(16));
         delay2Button.addActionListener(new ActionListener()
         {
@@ -69,10 +67,9 @@ public class Reminder {
         });
         
         delay3Button = new JButton("DELAY 5 MINUTES");
-        delay3Button.setMargin(new Insets(8, 12, 8, 12));
+        delay3Button.setMargin(new Insets(4, 8, 4, 8));
         delay3Button.setBackground(ResourceLoader.getBGColor());
         delay3Button.setForeground(ResourceLoader.getTextColor());
-        delay3Button.setBorder(ResourceLoader.getDefaultButtonBorder());
         delay3Button.setFont(ResourceLoader.getDefaultBoldFont(16));
         delay3Button.addActionListener(new ActionListener()
         {

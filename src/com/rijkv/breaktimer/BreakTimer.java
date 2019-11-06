@@ -102,4 +102,10 @@ public class BreakTimer {
 	{
 		mainFrame.hide();
 	}
+	
+	public void StartupMode()
+	{
+		// TODO: Open an starup window
+		// Hide()		
+	}
 }
