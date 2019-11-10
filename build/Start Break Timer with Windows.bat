@@ -28,5 +28,8 @@ if '%errorlevel%' NEQ '0' (
     pushd "%CD%"
     CD /D "%~dp0"
 :--------------------------------------  
-echo @echo off > "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\break_time_startup.bat"
-echo start javaw -Xmx200m -jar "%CD%\build.jar" "startup">> "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\break_time_startup.bat"
+set mypath="C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Break Timer Startup.bat"
+
+echo @echo off > %mypath%
+echo cd %CD% >> %mypath%
+echo start javaw -jar "Break Timer.jar" >> %mypath%
