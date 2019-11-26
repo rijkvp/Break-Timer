@@ -105,7 +105,6 @@ public class BreakTimer {
 	
 	public void StartupMode()
 	{
-		// TODO: Open an starup window
-		// Hide()		
+		Hide();
 	}
 }
