@@ -32,4 +32,4 @@ set mypath="C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Break T
 
 echo @echo off > %mypath%
 echo cd %CD% >> %mypath%
-echo start javaw -jar "Break Timer.jar" >> %mypath%
+echo start javaw -jar "Break Timer.jar" "startup" >> %mypath%
