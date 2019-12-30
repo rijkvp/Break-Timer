@@ -1,5 +1,8 @@
 package com.rijkv.breaktimer;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 //import java.time.LocalTime;
@@ -26,6 +29,7 @@ public class Countdown {
 	
 	private Break breakWindow = new Break(this);
 	private Reminder reminder = new Reminder(this);
+	private GamePopup gamePopup = new GamePopup();
 	
 	private int reminderTime = 20;
 	private boolean didReminder = false;
@@ -117,6 +121,7 @@ public class Countdown {
                 } 
                 else 
                 {
+                	KillProcesses();
                 	if (state == CountdownState.Countdown)
                 	{
                 		if (keyListener.isKeyboardUsed() || mouseListener.isMouseUsed())
@@ -272,5 +277,54 @@ public class Countdown {
 	    	return String.format("%02d", hoursCount) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
 	    else
 	    	return String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
+	}
+	
+	void KillProcesses()
+	{
+		String line;
+		String pidInfo ="";
+
+		Process p = null;
+		try {
+			p = Runtime.getRuntime().exec(System.getenv("windir") +"\\system32\\"+"tasklist.exe");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		BufferedReader input =  new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+		try {
+			while ((line = input.readLine()) != null) {
+			    pidInfo+=line; 
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			input.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		final String[] GAME_PROCESSES = { "csgo.exe", "MinecraftLauncher.exe", "Seum.exe", "Cities.exe", "ravenfield.exe", "insurgency_x64.exe" };
+		
+		for(var process : GAME_PROCESSES)
+		{
+			if(pidInfo.contains(process))
+			{
+				ForceKillProcess(process);
+				gamePopup.Open(process);
+			}
+		}
+	}
+	
+	public static void ForceKillProcess(String processName)
+	{
+		try {
+			Runtime.getRuntime().exec("taskkill /F /IM " + processName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
