@@ -24,6 +24,8 @@ import javax.swing.JLabel;
 
 public class Break implements Runnable {
 
+	public boolean passiveMode = false;
+	
 	private JFrame breakFrame;
 	private ImagePanel contentPanel;
 
@@ -85,7 +87,7 @@ public class Break implements Runnable {
 		breakFrame.setSize(600, 400);
 
 		// Always on top
-		if (Settings.getForceMode()) {
+		if (Settings.getForceMode() && !passiveMode) {
 			breakFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			int state = breakFrame.getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL;
 			breakFrame.setExtendedState(state);
@@ -99,7 +101,7 @@ public class Break implements Runnable {
 	}
 
 	private void ForceStop() {
-		if (refCountdown.CanSkip())
+		if (refCountdown.CanSkip() || passiveMode)
 		{
 			PlaySound("skip_sound");
 			refCountdown.ForceStop();
@@ -108,7 +110,7 @@ public class Break implements Runnable {
 
 	public void SetTime(int time) {
 		timeLabel.setText(Countdown.formatHHMMSS(time));
-		if (refCountdown.CanSkip()) {
+		if (refCountdown.CanSkip() || passiveMode) {
 			contentPanel.add(skipButton);
 			if (!didAddSkipButton) {
 				didAddSkipButton = true;
@@ -257,7 +259,7 @@ public class Break implements Runnable {
 	}
 
 	public void run() {
-		if (Settings.getForceMode()) {
+		if (Settings.getForceMode() && !passiveMode) {
 			try {
 				kill("explorer.exe"); // Kill explorer
 

@@ -14,11 +14,14 @@ public class GamePopup {
 	private JPanel panel;
 	private JLabel label;
 	private JButton ignoreButton;
+	private JButton passiveModeButton;
 	private JButton quitButton;
 	
 	private Countdown countdown;
 	
-	public GamePopup() {	
+	public GamePopup(Countdown refCountdown) {	
+		countdown = refCountdown;
+		
 		contentPanel = new JPanel();
 		contentPanel.setBackground(ResourceLoader.getBGColor());
 		contentPanel.setBounds(0, 400, 400, 400);
@@ -35,7 +38,7 @@ public class GamePopup {
         Font font = new Font(Settings.getFontName(), Font.BOLD, 28);
         label.setFont(font);
         
-        ignoreButton = new JButton("IGNORE");
+        ignoreButton = new JButton("IGNORE (THE BEST OPTION)");
         ignoreButton.setMargin(new Insets(4, 8, 4, 8));
         ignoreButton.setBackground(ResourceLoader.getBGColor());
         ignoreButton.setForeground(ResourceLoader.getTextColor());
@@ -48,7 +51,21 @@ public class GamePopup {
             }
         });
         
-        quitButton = new JButton("QUIT");
+        passiveModeButton = new JButton("PASSIVE MODE (RECOMMENDED)");
+        passiveModeButton.setMargin(new Insets(4, 8, 4, 8));
+        passiveModeButton.setBackground(ResourceLoader.getBGColor());
+        passiveModeButton.setForeground(ResourceLoader.getTextColor());
+        passiveModeButton.setFont(ResourceLoader.getDefaultBoldFont(16));
+        passiveModeButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+            	countdown.EnablePassiveMode();
+            	Close();
+            }
+        });
+        
+        quitButton = new JButton("YES DISABLE PLS");
         quitButton.setMargin(new Insets(4, 8, 4, 8));
         quitButton.setBackground(ResourceLoader.getBGColor());
         quitButton.setForeground(ResourceLoader.getTextColor());
@@ -64,18 +81,19 @@ public class GamePopup {
         
 		contentPanel.add(label);
 		contentPanel.add(ignoreButton);
+		contentPanel.add(passiveModeButton);
 		contentPanel.add(quitButton);
 		
         popupFrame = new JFrame("GAME POPUP");
         popupFrame.add(contentPanel);
-        popupFrame.setSize(500, 150);
+        popupFrame.setSize(900, 150);
 		
         popupFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	}
 	
 	public void Open(String processName)
 	{		
-		label.setText("KILLED " + processName + "!");
+		label.setText("DISABLE BREAKTIMER WHILE PLAYING " + processName + "?!");
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double xpos = screenSize.getWidth() / 2;
 		double ypos = screenSize.getHeight() / 2;

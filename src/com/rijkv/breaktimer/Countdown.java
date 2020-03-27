@@ -29,7 +29,7 @@ public class Countdown {
 	
 	private Break breakWindow = new Break(this);
 	private Reminder reminder = new Reminder(this);
-	private GamePopup gamePopup = new GamePopup();
+	private GamePopup gamePopup = new GamePopup(this);
 	
 	private int reminderTime = 20;
 	private boolean didReminder = false;
@@ -106,6 +106,11 @@ public class Countdown {
 		return !didDelay;
 	}
 	
+	public void EnablePassiveMode()
+	{
+		breakWindow.passiveMode = true;
+	}
+	
 	private void Start()
 	{
 		int delay = 1000;
@@ -138,16 +143,16 @@ public class Countdown {
                 			if (inactiveTime >= Settings.getBreakDuration())
                 				Reset();
                 			
-                    		reminderTime = Integer.parseInt(Settings.getReminderTime());
-                    		if (countdown <= reminderTime)
-                        	{
-                        		reminder.SetTime(countdown);
-                        		if (!didReminder) 
-                        		{
-                        			didReminder = true;
-                            		reminder.Open();
-                        		}
-                        	}
+//                    		reminderTime = Integer.parseInt(Settings.getReminderTime());
+//                    		if (countdown <= reminderTime)
+//                        	{
+//                        		reminder.SetTime(countdown);
+//                        		if (!didReminder) 
+//                        		{
+//                        			didReminder = true;
+//                            		//reminder.Open();
+//                        		}
+//                        	}
                     	}
                 	}
                 	else if (state == CountdownState.Break)
