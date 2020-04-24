@@ -60,7 +60,7 @@ public class GamePopup {
         {
             public void actionPerformed(ActionEvent e)
             {
-            	countdown.EnablePassiveMode();
+            	countdown.SetPassiveMode(true);
             	Close();
             }
         });

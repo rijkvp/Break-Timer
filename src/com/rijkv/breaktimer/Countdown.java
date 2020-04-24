@@ -33,7 +33,7 @@ public class Countdown {
 	
 	private int reminderTime = 20;
 	private boolean didReminder = false;
-	
+	private boolean passiveMode = false;
 	private MouseListener mouseListener;
 	private KeyListener keyListener;
 	private boolean didDelay = false;
@@ -77,7 +77,10 @@ public class Countdown {
 				currentLabel.setText("BREAK " + formatHHMMSS(countdown));
 				break;
 			case Countdown:
-				currentLabel.setText("BREAK OVER " + formatHHMMSS(countdown));
+				if (!passiveMode)
+					currentLabel.setText("BREAK OVER " + formatHHMMSS(countdown));
+				else
+					currentLabel.setText("BREAK OVER " + formatHHMMSS(countdown) + " PASSIVE");
 				break;
 			default:
 				break;
@@ -106,9 +109,10 @@ public class Countdown {
 		return !didDelay;
 	}
 	
-	public void EnablePassiveMode()
+	public void SetPassiveMode(boolean value)
 	{
-		breakWindow.passiveMode = true;
+		passiveMode = value;
+		breakWindow.passiveMode = value;
 	}
 	
 	private void Start()
@@ -126,7 +130,7 @@ public class Countdown {
                 } 
                 else 
                 {
-                	KillProcesses();
+                	CheckProcessInfo();
                 	if (state == CountdownState.Countdown)
                 	{
                 		if (keyListener.isKeyboardUsed() || mouseListener.isMouseUsed())
@@ -284,7 +288,7 @@ public class Countdown {
 	    	return String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
 	}
 	
-	void KillProcesses()
+	void CheckProcessInfo()
 	{
 		String line;
 		String pidInfo ="";
@@ -312,16 +316,20 @@ public class Countdown {
 			e.printStackTrace();
 		}
 		
-		final String[] GAME_PROCESSES = { "csgo.exe", "MinecraftLauncher.exe", "Seum.exe", "Cities.exe", "ravenfield.exe", "insurgency_x64.exe" };
-		
-		for(var process : GAME_PROCESSES)
+		final String[] PASSIVE_MODE_PROCESSES = { "csgo.exe", "MinecraftLauncher.exe", "Seum.exe", "Cities.exe", "ravenfield.exe", "insurgency_x64.exe", "Teams.exe" };
+		boolean foundProcess = false;
+		for(var process : PASSIVE_MODE_PROCESSES)
 		{
 			if(pidInfo.contains(process))
 			{
-				ForceKillProcess(process);
-				gamePopup.Open(process);
+				foundProcess = true;
+				//ForceKillProcess(process);
+				//gamePopup.Open(process);
 			}
 		}
+		
+		SetPassiveMode(foundProcess);
+		
 	}
 	
 	public static void ForceKillProcess(String processName)
