@@ -1,9 +1,17 @@
 package com.rijkv.breaktimer;
 
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
@@ -52,7 +60,10 @@ public class Settings {
 	final static String FONT_NAME = "font_name";
 	final static String FORCE_MODE = "force_mode";
 	final static String RANDOM_MODE = "random_mode";
-	
+
+	private static final String PASSIVE_PROCESSES_CONFIG_PATH = "./configuration/passive_processes.ini";
+	private static ArrayList<String> passiveProcesses = new ArrayList<String>();
+	private static boolean configLoaded = false;
 	
 	public Settings(String title) {
 		SetupPrefs();
@@ -306,5 +317,25 @@ public class Settings {
 	public static boolean getRandomMode()
 	{
 		return Boolean.parseBoolean(prefs.get(RANDOM_MODE, "false"));
+	}
+	
+	public static ArrayList<String> getPassiveProcesses()
+	{
+		if (!configLoaded) {
+			try (BufferedReader br = new BufferedReader(new FileReader(PASSIVE_PROCESSES_CONFIG_PATH))) {
+			    String line;
+			    while ((line = br.readLine()) != null) {
+			    	passiveProcesses.add(line);
+			    }
+			} catch (FileNotFoundException e) {
+				showMessageDialog(null, e.toString(), "FileNotFoundException", ERROR_MESSAGE);
+				e.printStackTrace();
+			} catch (IOException e) {
+				showMessageDialog(null, e.toString(), "IOException", ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+			configLoaded = true;
+		}
+		return passiveProcesses;
 	}
 }

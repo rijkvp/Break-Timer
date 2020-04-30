@@ -3,8 +3,10 @@ package com.rijkv.breaktimer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 //import java.time.LocalTime;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,7 +24,7 @@ enum CountdownState
 public class Countdown {	
 	
 	private CountdownState state = CountdownState.Countdown;
-	private int countdown;
+	private double countdown;
 	private int inactiveTime;
 	private final int maxInactiveTime = 5;
 	private JLabel currentLabel;
@@ -31,12 +33,17 @@ public class Countdown {
 	private Reminder reminder = new Reminder(this);
 	private GamePopup gamePopup = new GamePopup(this);
 	
+	private static int SOUND_REMINDER_TIME = 300;
+	
 	private int reminderTime = 20;
 	private boolean didReminder = false;
+	private boolean didSoundReminder = false;
 	private boolean passiveMode = false;
 	private MouseListener mouseListener;
 	private KeyListener keyListener;
 	private boolean didDelay = false;
+	
+	private LocalDateTime previousTime;
 	
 	public Countdown() {
 		try {
@@ -74,13 +81,13 @@ public class Countdown {
 		switch(state)
 		{
 			case Break:
-				currentLabel.setText("BREAK " + formatHHMMSS(countdown));
+				currentLabel.setText("BREAK " + formatHHMMSS((long)countdown));
 				break;
 			case Countdown:
 				if (!passiveMode)
-					currentLabel.setText("BREAK OVER " + formatHHMMSS(countdown));
+					currentLabel.setText("BREAK OVER " + formatHHMMSS((long)countdown));
 				else
-					currentLabel.setText("BREAK OVER " + formatHHMMSS(countdown) + " PASSIVE");
+					currentLabel.setText("BREAK OVER " + formatHHMMSS((long)countdown) + " PASSIVE");
 				break;
 			default:
 				break;
@@ -131,44 +138,63 @@ public class Countdown {
                 else 
                 {
                 	CheckProcessInfo();
-                	if (state == CountdownState.Countdown)
+                	if (previousTime == null)
                 	{
-                		if (keyListener.isKeyboardUsed() || mouseListener.isMouseUsed())
-                			inactiveTime = 0;
-                		else
-                			inactiveTime++;
-                		
-                		
-                		if (CheckTime())
+                		previousTime = LocalDateTime.now();
+                	}
+                	long millis = ChronoUnit.MILLIS.between(previousTime, LocalDateTime.now());
+            		double diff = (double)millis / (double)1000;
+            		previousTime = LocalDateTime.now();
+            		if (diff > Settings.getBreakDuration())
+            			Reset();
+            		if (!(diff < 0.9))
+            		{
+            			if (state == CountdownState.Countdown)
                     	{
-                			if (inactiveTime <= maxInactiveTime)
-                    			countdown--;
-                			
-                			if (inactiveTime >= Settings.getBreakDuration())
-                				Reset();
-                			
-//                    		reminderTime = Integer.parseInt(Settings.getReminderTime());
-//                    		if (countdown <= reminderTime)
-//                        	{
-//                        		reminder.SetTime(countdown);
-//                        		if (!didReminder) 
-//                        		{
-//                        			didReminder = true;
-//                            		//reminder.Open();
-//                        		}
-//                        	}
+                    		if (keyListener.isKeyboardUsed() || mouseListener.isMouseUsed())
+                    			inactiveTime = 0;
+                    		else
+                    			inactiveTime += diff;
+                    		
+                    		
+                    		if (CheckTime())
+                        	{
+                    			if (inactiveTime <= maxInactiveTime)
+                        			countdown -= diff;
+                    			
+                    			if (inactiveTime >= Settings.getBreakDuration())
+                    				Reset();
+                    			
+                    			if (countdown <= SOUND_REMINDER_TIME)
+                    			{
+                    				if (!didSoundReminder)
+                    				{
+                    					Break.PlaySound("5min-reminder");
+                    					didSoundReminder = true;
+                    				}
+                    			}
+//                        		reminderTime = Integer.parseInt(Settings.getReminderTime());
+//                        		if (countdown <= reminderTime)
+//                            	{
+//                            		reminder.SetTime(countdown);
+//                            		if (!didReminder) 
+//                            		{
+//                            			didReminder = true;
+//                                		//reminder.Open();
+//                            		}
+//                            	}
+                        	}
                     	}
-                	}
-                	else if (state == CountdownState.Break)
-                	{
-                		if (!keyListener.isKeyboardUsed() || !mouseListener.isMouseUsed())
-                		{
-                    		countdown--;
-                		}
+                    	else if (state == CountdownState.Break)
+                    	{
+                    		if (!keyListener.isKeyboardUsed() || !mouseListener.isMouseUsed())
+                    		{
+                        		countdown -= diff;
+                    		}
 
-                		breakWindow.SetTime(countdown);
-                	}
-                	
+                    		breakWindow.SetTime((int)countdown);
+                    	}
+            		}            	
                 	Display();
                 }
             }
@@ -181,6 +207,7 @@ public class Countdown {
 		state = CountdownState.Countdown;
 		countdown = Settings.getTimeBetweenBreak();
 		didReminder = false;
+		didSoundReminder = false;
 		breakWindow.Close();
 	}
 	
@@ -246,6 +273,7 @@ public class Countdown {
 	private void Switch()
 	{
 		didReminder = false;
+		didSoundReminder = false;
 		switch(state)
 		{
 			case Break:
@@ -259,7 +287,7 @@ public class Countdown {
 					state = CountdownState.Break;
 					countdown = Settings.getBreakDuration();
 					breakWindow.Open();
-					breakWindow.SetTime(countdown);
+					breakWindow.SetTime((int)countdown);
 				} else {
 					state = CountdownState.Countdown;
 					countdown = Settings.getTimeBetweenBreak();
@@ -316,9 +344,8 @@ public class Countdown {
 			e.printStackTrace();
 		}
 		
-		final String[] PASSIVE_MODE_PROCESSES = { "csgo.exe", "MinecraftLauncher.exe", "Seum.exe", "Cities.exe", "ravenfield.exe", "insurgency_x64.exe", "Teams.exe" };
 		boolean foundProcess = false;
-		for(var process : PASSIVE_MODE_PROCESSES)
+		for(var process : Settings.getPassiveProcesses())
 		{
 			if(pidInfo.contains(process))
 			{

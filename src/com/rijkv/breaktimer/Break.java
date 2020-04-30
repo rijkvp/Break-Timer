@@ -139,7 +139,7 @@ public class Break implements Runnable {
 		isOpen = false;
 		breakFrame.hide();
 	}
-	private void PlaySound(String filename)
+	public static void PlaySound(String filename)
 	{
 		String soundName = "./assets/" + filename +".wav";
 		AudioInputStream audioInputStream = null;
