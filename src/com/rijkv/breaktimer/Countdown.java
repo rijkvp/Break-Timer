@@ -25,19 +25,20 @@ public class Countdown {
 	
 	private CountdownState state = CountdownState.Countdown;
 	private double countdown;
-	private int inactiveTime;
-	private final int maxInactiveTime = 5;
+	private double inactiveTime;
+	private static final int MAX_INACTIVE_TIME = 5;
 	private JLabel currentLabel;
 	
 	private Break breakWindow = new Break(this);
-	private Reminder reminder = new Reminder(this);
-	private GamePopup gamePopup = new GamePopup(this);
 	
-	private static int SOUND_REMINDER_TIME = 300;
+	private final static int SOUND_REMINDER_15M = 15 * 60;
+	private final static int SOUND_REMINDER_5M = 5 * 60;
+	private final static int SOUND_REMINDER_1M = 1 * 60;
 	
-	private int reminderTime = 20;
-	private boolean didReminder = false;
-	private boolean didSoundReminder = false;
+	private boolean soundReminder15m = false;
+	private boolean soundReminder5m = false;
+	private boolean soundReminder1m = false;
+	
 	private boolean passiveMode = false;
 	private MouseListener mouseListener;
 	private KeyListener keyListener;
@@ -107,7 +108,6 @@ public class Countdown {
 		{			
 			countdown += seconds;
 			didDelay = true;
-			didReminder = false;
 		}
 	}
 	
@@ -129,8 +129,7 @@ public class Countdown {
         final Timer time = new Timer();
         time.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                if (countdown == 0) {
-                	reminder.Close();
+                if (countdown <= 0.0) {
                     Switch();
                     time.cancel();
                     time.purge();
@@ -152,25 +151,45 @@ public class Countdown {
             			if (state == CountdownState.Countdown)
                     	{
                     		if (keyListener.isKeyboardUsed() || mouseListener.isMouseUsed())
+                    		{
                     			inactiveTime = 0;
+                    		}
                     		else
                     			inactiveTime += diff;
                     		
                     		
                     		if (CheckTime())
                         	{
-                    			if (inactiveTime <= maxInactiveTime)
+                    			if (inactiveTime <= MAX_INACTIVE_TIME)
                         			countdown -= diff;
                     			
                     			if (inactiveTime >= Settings.getBreakDuration())
-                    				Reset();
-                    			
-                    			if (countdown <= SOUND_REMINDER_TIME)
                     			{
-                    				if (!didSoundReminder)
+                    				inactiveTime = 0.0;
+                    				Reset();
+                    			}
+                    			if (countdown <= SOUND_REMINDER_15M)
+                    			{
+                    				if (!soundReminder15m)
+                    				{
+                    					Break.PlaySound("15min-reminder");
+                    					soundReminder15m = true;
+                    				}
+                    			}
+                    			if (countdown <= SOUND_REMINDER_5M)
+                    			{
+                    				if (!soundReminder5m)
                     				{
                     					Break.PlaySound("5min-reminder");
-                    					didSoundReminder = true;
+                    					soundReminder5m = true;
+                    				}
+                    			}
+                    			if (countdown <= SOUND_REMINDER_1M)
+                    			{
+                    				if (!soundReminder1m)
+                    				{
+                    					Break.PlaySound("1min-reminder");
+                    					soundReminder1m = true;
                     				}
                     			}
 //                        		reminderTime = Integer.parseInt(Settings.getReminderTime());
@@ -187,7 +206,7 @@ public class Countdown {
                     	}
                     	else if (state == CountdownState.Break)
                     	{
-                    		if (!keyListener.isKeyboardUsed() || !mouseListener.isMouseUsed())
+                    		if (!(keyListener.isKeyboardUsed() || mouseListener.isMouseUsed()))
                     		{
                         		countdown -= diff;
                     		}
@@ -206,8 +225,9 @@ public class Countdown {
 	{
 		state = CountdownState.Countdown;
 		countdown = Settings.getTimeBetweenBreak();
-		didReminder = false;
-		didSoundReminder = false;
+		soundReminder15m = false;
+		soundReminder5m = false;	
+		soundReminder1m = false;
 		breakWindow.Close();
 	}
 	
@@ -271,9 +291,10 @@ public class Countdown {
 	}
 	
 	private void Switch()
-	{
-		didReminder = false;
-		didSoundReminder = false;
+	{		
+		soundReminder15m = false;
+		soundReminder5m = false;	
+		soundReminder1m = false;
 		switch(state)
 		{
 			case Break:
@@ -292,8 +313,8 @@ public class Countdown {
 					state = CountdownState.Countdown;
 					countdown = Settings.getTimeBetweenBreak();
 					breakWindow.Close();
-					didReminder = true;
-					// TODO: Actually close program if out of time range
+					// Close program if out of time range
+					System.exit(0);
 				}
 				break;
 			default:
