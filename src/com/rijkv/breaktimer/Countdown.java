@@ -206,10 +206,10 @@ public class Countdown {
                     	}
                     	else if (state == CountdownState.Break)
                     	{
-                    		if (!(keyListener.isKeyboardUsed() || mouseListener.isMouseUsed()))
+                    		if (!keyListener.isKeyboardUsed() || !mouseListener.isMouseUsed())
                     		{
-                        		countdown -= diff;
-                    		}
+                    			countdown -= diff;
+                    		}                 			
 
                     		breakWindow.SetTime((int)countdown);
                     	}
