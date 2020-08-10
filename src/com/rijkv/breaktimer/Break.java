@@ -22,6 +22,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import com.rijkv.breaktimer.components.ImagePanel;
+import com.rijkv.breaktimer.filemanagement.ResourceLoader;
+import com.rijkv.breaktimer.components.*;
+
 public class Break implements Runnable {
 
 	public boolean passiveMode = false;

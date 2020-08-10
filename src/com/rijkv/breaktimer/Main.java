@@ -1,6 +1,5 @@
 package com.rijkv.breaktimer;
 
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,17 +13,8 @@ public class Main {
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
 		logger.setLevel(Level.OFF);
 		
-		// Startup command line argument
-		if (Arrays.stream(args).anyMatch("startup"::equals))
-		{
-			BreakTimer breakTimer = new BreakTimer();
-			breakTimer.StartupMode();
-		} 
-		else 
-		{
-			@SuppressWarnings("unused")
-			BreakTimer breakTimer = new BreakTimer();
-		}
+		// Start program class
+		new BreakTimer();
 	}
 
 }

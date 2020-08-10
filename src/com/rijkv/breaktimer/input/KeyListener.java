@@ -1,4 +1,4 @@
-package com.rijkv.breaktimer;
+package com.rijkv.breaktimer.input;
 
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;

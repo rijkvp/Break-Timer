@@ -12,9 +12,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
+
+import com.rijkv.breaktimer.input.KeyListener;
+import com.rijkv.breaktimer.input.MouseListener;
 
 enum CountdownState
 { 
@@ -25,7 +29,9 @@ public class Countdown {
 	
 	private CountdownState state = CountdownState.Countdown;
 	private double countdown;
+	private double bigBreakTimer;
 	private double inactiveTime;
+	private static final int BIG_BREAK_TIME = 7200;
 	private static final int MAX_INACTIVE_TIME = 5;
 	private JLabel currentLabel;
 	
@@ -161,7 +167,14 @@ public class Countdown {
                     		if (CheckTime())
                         	{
                     			if (inactiveTime <= MAX_INACTIVE_TIME)
-                        			countdown -= diff;
+                    			{
+                    				countdown -= diff;
+                    				bigBreakTimer += diff;
+                    				if (bigBreakTimer >= BIG_BREAK_TIME)
+                    				{
+                    					BigBreak();
+                    				}
+                    			}
                     			
                     			if (inactiveTime >= Settings.getBreakDuration())
                     			{
@@ -321,6 +334,16 @@ public class Countdown {
 				break;
 		}
 		Start();
+	}
+	
+	private void BigBreak()
+	{
+		bigBreakTimer = 0.0;
+		soundReminder15m = false;
+		soundReminder5m = false;	
+		soundReminder1m = false;
+		countdown = Settings.getTimeBetweenBreak();
+		JOptionPane.showMessageDialog(null, "BIG BREAK!");
 	}
 	
 	

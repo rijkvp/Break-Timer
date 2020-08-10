@@ -1,4 +1,4 @@
-package com.rijkv.breaktimer;
+package com.rijkv.breaktimer.filemanagement;
 
 import java.awt.Color;
 import java.awt.Font;

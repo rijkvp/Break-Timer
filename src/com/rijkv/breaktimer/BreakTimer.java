@@ -1,110 +1,102 @@
 package com.rijkv.breaktimer;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.time.Duration;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
+
+import com.rijkv.breaktimer.input.KeyListener;
+import com.rijkv.breaktimer.input.MouseListener;
+
+enum TimerState {
+	CountingDown {
+        @Override
+        public Duration getDuration() {
+            return Duration.ofMinutes(30);
+        }
+        
+        @Override
+        public TimerState getNextState() {
+        	return SmallBreak;
+        }
+    },
+    SmallBreak {
+        @Override
+        public Duration getDuration() {
+        	return Duration.ofMinutes(2);
+        }
+        
+        @Override
+        public TimerState getNextState() {
+        	return CountingDown;
+        }
+    },
+    BigBreak {
+        @Override
+        public Duration getDuration() {
+        	return Duration.ofMinutes(8);
+        }
+        
+        @Override
+        public TimerState getNextState() {
+        	return CountingDown;
+        }
+    };
+	
+	public abstract TimerState getNextState();
+    public abstract Duration getDuration();
+}
 
 public class BreakTimer {
 	
-	private JFrame mainFrame;
+	private TimerState timerState;
+	private Stopwatch stopwatch;
 	
-	private JPanel contentPanel;
-	private JPanel panel;
-	private JButton settingsButton;
-	private JLabel timeLabel;
-	
-	private Settings settings = new Settings("Settings");
-	private Countdown countdown = new Countdown();
-		
+	private MouseListener mouseListener;
+	private KeyListener keyListener;
 	
 	public BreakTimer()
 	{
-		contentPanel = new JPanel();
+		timerState = TimerState.CountingDown;
+		stopwatch = new Stopwatch();
+		stopwatch.start();
 		
-		panel = new JPanel();
-		
-		GridLayout gridLayout = new GridLayout(0,1);
-		gridLayout.setVgap(10);
-        panel.setLayout(gridLayout);
-       
-        timeLabel = new JLabel("BREAK OVER ...:...");
-        timeLabel.setFont(ResourceLoader.getDefaultBoldFont(32f));
-        timeLabel.setForeground(ResourceLoader.getTextColor());
+		// Setup Keyboard & Mouse listeners
+		try {
+			GlobalScreen.registerNativeHook();
+		}
+		catch (NativeHookException ex) {
+			System.err.println("There was a problem registering the native hook.");
+			System.err.println(ex.getMessage());
 
-        panel.add(timeLabel);
-        
-        contentPanel.add(panel);
-		
-        settingsButton = new JButton("SETTINGS");
-        settingsButton.setForeground(ResourceLoader.getTextColor());
-        settingsButton.setBackground(ResourceLoader.getBGColor());
-        settingsButton.setFont(ResourceLoader.getDefaultBoldFont(22f));
-        settingsButton.setBorder(ResourceLoader.getDefaultButtonBorder());
-        settingsButton.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-        	  settings.Open();
-          }
-        });
-        panel.add(settingsButton);
-        
-        JButton breakButton = new JButton("BREAK NOW");
-        breakButton.setForeground(ResourceLoader.getTextColor());
-        breakButton.setBackground(ResourceLoader.getBGColor());
-        breakButton.setFont(ResourceLoader.getDefaultBoldFont(22f));
-        breakButton.setBorder(ResourceLoader.getDefaultButtonBorder());
-        breakButton.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-        	  countdown.BreakNow();
-          }
-        });
-        panel.add(breakButton);
+			System.exit(1);
+		}
 
-        
-        JButton quitButton = new JButton("QUIT");
-        quitButton.setForeground(ResourceLoader.getTextColor());
-        quitButton.setBackground(ResourceLoader.getBGColor());
-        quitButton.setFont(ResourceLoader.getDefaultBoldFont(22f));
-        quitButton.setBorder(ResourceLoader.getDefaultButtonBorder());
-        quitButton.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-        	  System.exit(0);
-          }
-        });
-        panel.add(quitButton);
-        
-        
-		mainFrame = new JFrame("Break Timer");
-		mainFrame.setVisible(true);
-		mainFrame.setSize(300, 250);
-		mainFrame.add(contentPanel);
-		mainFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		// Mouse listener
+		mouseListener = new MouseListener();
+		GlobalScreen.addNativeMouseListener(mouseListener);
+		GlobalScreen.addNativeMouseMotionListener(mouseListener);
 		
-		panel.setBackground(ResourceLoader.getBGColor());
-		contentPanel.setBackground(ResourceLoader.getBGColor());
-
-        countdown.Setup();
-        countdown.SetLabel(timeLabel);
+		// Key listener
+		keyListener = new KeyListener();
+		GlobalScreen.addNativeKeyListener(keyListener);
+		
+		loop();
 	}
 	
-	@SuppressWarnings("deprecation")
-	public void Hide()
+	private void loop()
 	{
-		mainFrame.hide();
+        final Timer time = new Timer();
+        time.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+            	if (stopwatch.elapsed() > timerState.getDuration().getNano())
+            	{
+            		
+            	}
+            }
+        }, 1000, 1000); // Update every second
 	}
 	
-	public void StartupMode()
-	{
-		Hide();
-	}
 }

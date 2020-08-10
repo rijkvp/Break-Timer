@@ -1,4 +1,4 @@
-package com.rijkv.breaktimer;
+package com.rijkv.breaktimer.input;
 
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
