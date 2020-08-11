@@ -24,3 +24,7 @@ hs_err_pid*
 # Assets & Export
 assets/
 export/
+
+# Ignore IDE's
+.project
+.vscode/
