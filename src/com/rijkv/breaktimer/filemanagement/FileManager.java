@@ -50,8 +50,10 @@ public final class FileManager {
 			Object obj = parser.parse(new FileReader(BREAK_CONFIG_PATH));
  
 			JSONArray jsonArray = (JSONArray) obj;
- 
+
+			@SuppressWarnings("unchecked") //Using legacy API
 			Iterator<JSONObject> iterator = jsonArray.iterator();
+			
 			while (iterator.hasNext()) {
 				breakInfos.add(new BreakInfo(iterator.next()));
 			}
