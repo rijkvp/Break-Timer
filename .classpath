@@ -7,6 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jnativehook-2.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/rijkv/Git-Repos/Break_Timer/lib/json_simple-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/json_simple-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
