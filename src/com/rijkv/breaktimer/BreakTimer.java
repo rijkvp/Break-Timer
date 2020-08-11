@@ -100,7 +100,10 @@ public class BreakTimer {
 						}
 						break;
 					case Break:
-						breakWindow.UpdateTimeText(breakStopwatch.toString());
+						Duration elapsedTime = Duration.ofNanos(breakStopwatch.elapsed());
+						Duration durationLeft = breakDuration.minus(elapsedTime);
+						durationLeft = durationLeft.plusSeconds(1);
+						breakWindow.UpdateTimeText(formatDuration(durationLeft));
 						// Check if the break is over
 						if (breakStopwatch.elapsed() >= breakDuration.toNanos()) {
 							timerState = TimerState.CountingDown;
@@ -114,6 +117,16 @@ public class BreakTimer {
 
 			}
 		}, 0, 100); // Update every second
+	}
+
+	public static String formatDuration(Duration duration) {
+		long seconds = duration.getSeconds();
+		long absSeconds = Math.abs(seconds);
+		String formatted = String.format(
+			"%02d:%02d",
+			(absSeconds % 3600) / 60,
+			absSeconds % 60);
+		return formatted;
 	}
 
 	private void StartBreakStopwatches() {
