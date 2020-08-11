@@ -29,6 +29,8 @@ public class BreakTimer {
 	private Stopwatch breakStopwatch = new Stopwatch();
 	private Duration breakDuration;
 
+	private BreakWindow breakWindow = new BreakWindow();
+
 	public BreakTimer() {
 		// Load config
 		var breaksList = FileManager.getBreakConfig();
@@ -36,7 +38,7 @@ public class BreakTimer {
 		Collections.sort(breaksList, (o1, o2) -> (int) o2.interval.toSeconds() - (int) o1.interval.toSeconds());
 
 		for (BreakInfo breakInfo : breaksList) {
-			System.out.println(breakInfo.interval.getSeconds());
+			System.out.println(breakInfo.description);
 			breaks.put(breakInfo, new Stopwatch());
 		}
 
@@ -93,15 +95,18 @@ public class BreakTimer {
 
 								breakStopwatch.start();
 								breakDuration = info.duration;
+								breakWindow.open(info);
 							}
 						}
 						break;
 					case Break:
+						breakWindow.UpdateTimeText(breakStopwatch.toString());
 						// Check if the break is over
 						if (breakStopwatch.elapsed() >= breakDuration.toNanos()) {
 							timerState = TimerState.CountingDown;
 							breakStopwatch.stop();
 							StartBreakStopwatches();
+							breakWindow.close();
 							System.out.println("BREAK OVER!");
 						}
 						break;
