@@ -85,13 +85,7 @@ public class BreakTimer {
 								timerState = TimerState.Break;
 
 								// Stop all stopwatches smaller than this interval
-								for (Map.Entry<BreakInfo, Stopwatch> entry2 : breaks.entrySet()) {
-									BreakInfo info2 = entry2.getKey();
-									Stopwatch stopwatch2 = entry2.getValue();
-									if (info2.interval.toSeconds() <= info.interval.toSeconds()) {
-										stopwatch2.stop();
-									}
-								}
+								StopSmallerStopwatches(info.interval);
 
 								breakStopwatch.start();
 								breakDuration = info.duration;
@@ -102,7 +96,7 @@ public class BreakTimer {
 					case Break:
 						Duration elapsedTime = Duration.ofNanos(breakStopwatch.elapsed());
 						Duration durationLeft = breakDuration.minus(elapsedTime);
-						durationLeft = durationLeft.plusSeconds(1);
+						durationLeft = durationLeft.plusMillis(800);
 						breakWindow.UpdateTimeText(formatDuration(durationLeft));
 						// Check if the break is over
 						if (breakStopwatch.elapsed() >= breakDuration.toNanos()) {
@@ -135,6 +129,22 @@ public class BreakTimer {
 			Stopwatch stopwatch = entry.getValue();
 			if (!stopwatch.isRunning()) {
 				stopwatch.start();
+			} else if (stopwatch.isPaused()) {
+				stopwatch.resume();
+			}
+		}
+	}
+
+	private void StopSmallerStopwatches(Duration interval) {
+		for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
+			BreakInfo info = entry.getKey();
+			Stopwatch stopwatch= entry.getValue();
+			if (info.interval.toSeconds() <= interval.toSeconds()) {
+				System.out.println("STOP " + info.name);
+				stopwatch.stop();
+			} else {
+				System.out.println("PAUSE " + info.name);
+				stopwatch.pause();
 			}
 		}
 	}
