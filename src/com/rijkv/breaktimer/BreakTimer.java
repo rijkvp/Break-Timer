@@ -10,7 +10,6 @@ import java.util.Map;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
-import com.rijkv.breaktimer.filemanagement.FileManager;
 import com.rijkv.breaktimer.input.KeyListener;
 import com.rijkv.breaktimer.input.MouseListener;
 
@@ -38,7 +37,6 @@ public class BreakTimer {
 		Collections.sort(breaksList, (o1, o2) -> (int) o2.interval.toSeconds() - (int) o1.interval.toSeconds());
 
 		for (BreakInfo breakInfo : breaksList) {
-			System.out.println(breakInfo.description);
 			breaks.put(breakInfo, new Stopwatch());
 		}
 
@@ -79,9 +77,6 @@ public class BreakTimer {
 							BreakInfo info = entry.getKey();
 							Stopwatch stopwatch = entry.getValue();
 							if (stopwatch.elapsed() >= info.interval.toNanos()) {
-								System.out.println(
-										"ELAPSED: " + stopwatch.elapsed() + "  INTERVAL: " + info.interval.toNanos());
-								System.out.println("BREAK!!! On " + info.name);
 								timerState = TimerState.Break;
 
 								// Stop all stopwatches smaller than this interval
@@ -104,7 +99,6 @@ public class BreakTimer {
 							breakStopwatch.stop();
 							StartBreakStopwatches();
 							breakWindow.close();
-							System.out.println("BREAK OVER!");
 						}
 						break;
 				}
@@ -140,10 +134,8 @@ public class BreakTimer {
 			BreakInfo info = entry.getKey();
 			Stopwatch stopwatch= entry.getValue();
 			if (info.interval.toSeconds() <= interval.toSeconds()) {
-				System.out.println("STOP " + info.name);
 				stopwatch.stop();
 			} else {
-				System.out.println("PAUSE " + info.name);
 				stopwatch.pause();
 			}
 		}

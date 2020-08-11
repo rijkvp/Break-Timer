@@ -1,0 +1,16 @@
+[
+    {
+        "name": "Small break",
+        "description": "Take a small break please!",
+        "interval": "PT10S",
+        "duration": "PT3S",
+        "soundPath": "small_break.wav"
+    },
+    {
+        "name": "Big break",
+        "description": "Take a BIG BREAK please!",
+        "interval": "PT30S",
+        "duration": "PT8S",
+        "soundPath": "big_break.wav"
+    }
+]

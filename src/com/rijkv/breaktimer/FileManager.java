@@ -1,4 +1,4 @@
-package com.rijkv.breaktimer.filemanagement;
+package com.rijkv.breaktimer;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -28,7 +28,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
-import com.rijkv.breaktimer.BreakInfo;
 
 public final class FileManager {
 	// Paths
@@ -139,7 +138,7 @@ public final class FileManager {
 	}
 
     public static void playSound(String filename) {
-        String soundName = "./assets/audio/" + filename + ".wav";
+        String soundName = "./assets/audio/" + filename;
         AudioInputStream audioInputStream = null;
         try {
             audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());

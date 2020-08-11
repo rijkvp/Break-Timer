@@ -7,7 +7,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import com.rijkv.breaktimer.filemanagement.FileManager;
 import com.rijkv.breaktimer.components.*;
 
 public class BreakWindow implements Runnable {
@@ -76,7 +75,7 @@ public class BreakWindow implements Runnable {
         breakFrame.setVisible(true);
         isOpened = true;
 
-        FileManager.playSound("break_sound");
+        FileManager.playSound(breakInfo.soundPath);
 
         new Thread(this).start();
     }
