@@ -37,8 +37,8 @@ public class ResourceLoader {
 		    e.printStackTrace();
 		}
 		
-		bgColor = Settings.getBGColor();
-		textColor = Settings.getFGColor();
+//		bgColor = Settings.getBGColor();
+//		textColor = Settings.getFGColor();
 	}
 	
 	public static Font getDefaultFont() {
