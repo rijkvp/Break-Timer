@@ -1,25 +1,38 @@
 [
     {
-        "name": "Small break",
+        "name": "Take a small break!",
         "description": "Take a small break please!",
-        "interval": "PT10S",
-        "duration": "PT5S",
+        "interval": "PT30M",
+        "duration": "PT2M",
         "startSoundPath": "break-start.wav",
         "endSoundPath": "break-end.wav",
         "reminders": [
             {
-                "timeBefore": "PT3S",
+                "timeBefore": "PT1M",
                 "soundPath": "1min-reminder.wav"
+            },
+            {
+                "timeBefore": "PT5M",
+                "soundPath": "5min-reminder.wav"
             }
         ]
     },
     {
-        "name": "Big break",
-        "description": "Take a BIG BREAK please!",
-        "interval": "PT40S",
-        "duration": "PT10S",
+        "name": "Take a BIG BREAK!",
+        "description": "Take a BIG break please!",
+        "interval": "PT30M",
+        "duration": "PT8M",
         "startSoundPath": "break-start.wav",
         "endSoundPath": "break-end.wav",
-        "reminders": []
+        "reminders": [
+            {
+                "timeBefore": "PT1M",
+                "soundPath": "1min-reminder.wav"
+            },
+            {
+                "timeBefore": "PT5M",
+                "soundPath": "5min-reminder.wav"
+            }
+        ]
     }
 ]
