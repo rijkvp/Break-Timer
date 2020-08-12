@@ -52,56 +52,57 @@ public final class FileManager {
 			while ((line = br.readLine()) != null) {
 				passiveProcesses.add(line);
 			}
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			showMessageDialog(null, e.toString(), "FileNotFoundException", ERROR_MESSAGE);
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			showMessageDialog(null, e.toString(), "IOException", ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 
 		// Load the break config .json file
-		JSONParser parser = new JSONParser();
+		final JSONParser parser = new JSONParser();
 		try {
-			Object obj = parser.parse(new FileReader(BREAK_CONFIG_PATH));
+			final Object obj = parser.parse(new FileReader(BREAK_CONFIG_PATH));
 
-			JSONArray jsonArray = (JSONArray) obj;
+			final JSONArray jsonArray = (JSONArray) obj;
 
 			@SuppressWarnings("unchecked") // Using legacy API
+			final
 			Iterator<JSONObject> iterator = jsonArray.iterator();
 
 			while (iterator.hasNext()) {
 				breakInfos.add(new BreakInfo(iterator.next()));
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
 		// Load resources
 		try {
 			breakBackroundImage = ImageIO.read(new File(ASSETS_FOLDER + "/img/break_background.png"));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
 		try {
-		    font = Font.createFont(Font.TRUETYPE_FONT, new File(ASSETS_FOLDER + "/font/regular.ttf")).deriveFont(12f);
-		    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		    ge.registerFont(font);
-		} catch (IOException e) {
-		    e.printStackTrace();
-		} catch(FontFormatException e) {
-		    e.printStackTrace();
+			font = Font.createFont(Font.TRUETYPE_FONT, new File(ASSETS_FOLDER + "/font/regular.ttf")).deriveFont(12f);
+			final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			ge.registerFont(font);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		} catch (final FontFormatException e) {
+			e.printStackTrace();
 		}
-		
+
 		try {
-		    boldFont = Font.createFont(Font.TRUETYPE_FONT, new File(ASSETS_FOLDER + "/font/bold.ttf")).deriveFont(12f);
-		    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		    ge.registerFont(boldFont);
-		} catch (IOException e) {
-		    e.printStackTrace();
-		} catch(FontFormatException e) {
-		    e.printStackTrace();
+			boldFont = Font.createFont(Font.TRUETYPE_FONT, new File(ASSETS_FOLDER + "/font/bold.ttf")).deriveFont(12f);
+			final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			ge.registerFont(boldFont);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		} catch (final FontFormatException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -120,16 +121,16 @@ public final class FileManager {
 	public static Font getFont() {
 		return font;
 	}
-	
-	public static Font getFont(float size) {
+
+	public static Font getFont(final float size) {
 		return font.deriveFont(size);
 	}
-	
+
 	public static Font getBoldFont() {
 		return boldFont;
 	}
-	
-	public static Font getBoldFont(float size) {
+
+	public static Font getBoldFont(final float size) {
 		return boldFont.deriveFont(size);
 	}
 
@@ -137,31 +138,39 @@ public final class FileManager {
 		return Color.BLACK;
 	}
 
-    public static void playSound(String filename) {
-        String soundName = "./assets/audio/" + filename;
-        AudioInputStream audioInputStream = null;
-        try {
-            audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
-        } catch (UnsupportedAudioFileException e1) {
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        Clip clip = null;
-        try {
-            clip = AudioSystem.getClip();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        }
-        try {
-            clip.open(audioInputStream);
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        clip.start();
+	public static void playSound(final String filename) {
+		final String path = "./assets/audio/" + filename;
+		AudioInputStream audioInputStream = null;
+		final File soundFile = new File(path).getAbsoluteFile();
+		try {
+			audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+		} catch (final UnsupportedAudioFileException e1) {
+			e1.printStackTrace();
+			return;
+		} catch (final IOException e1) {
+			System.out.println("The sound file " + path + " couldn't be loaded!");
+			return;
+		}
+		Clip clip = null;
+		try {
+			clip = AudioSystem.getClip();
+		} catch (final LineUnavailableException e) {
+			e.printStackTrace();
+			return;
+		}
+		try {
+			clip.open(audioInputStream);
+		} catch (final LineUnavailableException e) {
+			e.printStackTrace();
+			return;
+		} catch (final IOException e) {
+			e.printStackTrace();
+			return;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		clip.start();
 	}
-	
 
 }

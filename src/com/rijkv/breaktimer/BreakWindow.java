@@ -75,7 +75,7 @@ public class BreakWindow implements Runnable {
         breakFrame.setVisible(true);
         isOpened = true;
 
-        FileManager.playSound(breakInfo.soundPath);
+        FileManager.playSound(breakInfo.startSoundPath);
 
         new Thread(this).start();
     }

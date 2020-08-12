@@ -27,6 +27,7 @@ public class BreakTimer {
 
 	private Stopwatch breakStopwatch = new Stopwatch();
 	private Duration breakDuration;
+	private String breakEndSoundPath;
 
 	private BreakWindow breakWindow = new BreakWindow();
 
@@ -101,6 +102,7 @@ public class BreakTimer {
 								StopSmallerStopwatches(info.interval);
 
 								breakStopwatch.start();
+								breakEndSoundPath = info.endSoundPath;
 								breakDuration = info.duration;
 								breakWindow.open(info);
 							}
@@ -115,6 +117,8 @@ public class BreakTimer {
 						if (breakStopwatch.elapsed() >= breakDuration.toNanos()) {
 							timerState = TimerState.CountingDown;
 							breakStopwatch.stop();
+							if (breakEndSoundPath != null)
+								FileManager.playSound(breakEndSoundPath);
 							StartBreakStopwatches();
 							breakWindow.close();
 						}

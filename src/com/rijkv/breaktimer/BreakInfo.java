@@ -23,7 +23,8 @@ class Reminder {
 public class BreakInfo {
 	public String name;
 	public String description;
-	public String soundPath;
+	public String startSoundPath;
+	public String endSoundPath;
 	public Duration interval;
 	public Duration duration;
 	public ArrayList<Reminder> reminders;
@@ -31,7 +32,8 @@ public class BreakInfo {
 	public BreakInfo(JSONObject jsonObject) {
 		name = (String) jsonObject.get("name");
 		description = (String) jsonObject.get("description");
-		soundPath = (String) jsonObject.get("soundPath");
+		startSoundPath = (String) jsonObject.get("startSoundPath");
+		endSoundPath = (String) jsonObject.get("endSoundPath");
 		interval = Duration.parse((CharSequence) jsonObject.get("interval"));
 		duration = Duration.parse((CharSequence) jsonObject.get("duration"));
 
