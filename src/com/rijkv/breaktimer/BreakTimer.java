@@ -72,13 +72,31 @@ public class BreakTimer {
 			public void run() {
 				switch (timerState) {
 					case CountingDown:
+						// Check for reminders & play them
+						for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
+							BreakInfo info = entry.getKey();
+							Stopwatch stopwatch = entry.getValue();
+							Duration elapsedTime = Duration.ofNanos(stopwatch.elapsed());
+							Duration durationLeft = info.interval.minus(elapsedTime);
+							
+							for (var reminder : info.reminders)
+							{
+								if (reminder.isPlayed)
+									continue;
+								if (durationLeft.toNanos() <= reminder.timeBefore.toNanos())
+								{
+									FileManager.playSound(reminder.soundPath);
+									reminder.isPlayed = true;
+								}
+							}
+						}
 						// Check for breaks
 						for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
 							BreakInfo info = entry.getKey();
 							Stopwatch stopwatch = entry.getValue();
 							if (stopwatch.elapsed() >= info.interval.toNanos()) {
 								timerState = TimerState.Break;
-
+								
 								// Stop all stopwatches smaller than this interval
 								StopSmallerStopwatches(info.interval);
 
@@ -110,10 +128,7 @@ public class BreakTimer {
 	public static String formatDuration(Duration duration) {
 		long seconds = duration.getSeconds();
 		long absSeconds = Math.abs(seconds);
-		String formatted = String.format(
-			"%02d:%02d",
-			(absSeconds % 3600) / 60,
-			absSeconds % 60);
+		String formatted = String.format("%02d:%02d", (absSeconds % 3600) / 60, absSeconds % 60);
 		return formatted;
 	}
 
@@ -132,13 +147,13 @@ public class BreakTimer {
 	private void StopSmallerStopwatches(Duration interval) {
 		for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
 			BreakInfo info = entry.getKey();
-			Stopwatch stopwatch= entry.getValue();
+			Stopwatch stopwatch = entry.getValue();
 			if (info.interval.toSeconds() <= interval.toSeconds()) {
 				stopwatch.stop();
+				info.resetReminders(); // TODO: Bad function name
 			} else {
 				stopwatch.pause();
 			}
 		}
 	}
-
 }
