@@ -67,7 +67,7 @@ public class BreakTimer {
 
 	private void loop() {
 		StartBreakStopwatches();
-
+		System.out.println("The break-timers have been started!");
 		final Timer time = new Timer();
 		time.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
