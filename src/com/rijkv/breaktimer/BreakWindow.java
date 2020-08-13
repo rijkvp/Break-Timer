@@ -20,7 +20,7 @@ public class BreakWindow implements Runnable {
 
     private volatile boolean isOpened = false;
 
-    private final boolean FORCE_MODE = true;
+    private final boolean FORCE_MODE = false;
 
     public BreakWindow() {
         contentPanel = new ImagePanel(FileManager.getBreakBackgroundImage());

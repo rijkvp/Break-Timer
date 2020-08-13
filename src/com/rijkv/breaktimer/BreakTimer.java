@@ -18,17 +18,17 @@ enum TimerState {
 }
 
 public class BreakTimer {
-
+	
 	private TimerState timerState;
 	private HashMap<BreakInfo, Stopwatch> breaks = new HashMap<>();
 
 	private MouseListener mouseListener;
 	private KeyListener keyListener;
+	private Stopwatch activityStopwatch = new Stopwatch();
 
 	private Stopwatch breakStopwatch = new Stopwatch();
 	private Duration breakDuration;
 	private String breakEndSoundPath;
-
 	private BreakWindow breakWindow = new BreakWindow();
 
 	public BreakTimer() {
@@ -67,25 +67,49 @@ public class BreakTimer {
 
 	private void loop() {
 		StartBreakStopwatches();
+		activityStopwatch.start();
+
 		System.out.println("The break-timers have been started!");
+
 		final Timer time = new Timer();
 		time.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
+				if (keyListener.isKeyboardUsed() || mouseListener.isMouseUsed()) {
+					activityStopwatch.stop();
+					activityStopwatch.start();
+				}
+				boolean userIsActive = (activityStopwatch.elapsed() < 10 * 1000000000L);
+
 				switch (timerState) {
 					case CountingDown:
+						if (!userIsActive) {
+							// Pause all stopwatches
+							for (var stopwatch : breaks.values()) {
+								if (!stopwatch.isPaused()) {
+									stopwatch.pause();
+								}
+							}
+							return;
+						} else {
+							// Resume them
+							for (var stopwatch : breaks.values()) {
+								if (stopwatch.isPaused()) {
+									stopwatch.resume();
+								}
+							}
+						}
+						// TODO: CALCULATE THE NEXT BREAK ONLY CHECK & PLAY REMINDERS FOR THAT ONE!!
 						// Check for reminders & play them
 						for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
 							BreakInfo info = entry.getKey();
 							Stopwatch stopwatch = entry.getValue();
 							Duration elapsedTime = Duration.ofNanos(stopwatch.elapsed());
 							Duration durationLeft = info.interval.minus(elapsedTime);
-							
-							for (var reminder : info.reminders)
-							{
+
+							for (var reminder : info.reminders) {
 								if (reminder.isPlayed)
 									continue;
-								if (durationLeft.toNanos() <= reminder.timeBefore.toNanos())
-								{
+								if (durationLeft.toMillis() <= reminder.timeBefore.toMillis()) {
 									FileManager.playSound(reminder.soundPath);
 									reminder.isPlayed = true;
 								}
@@ -97,7 +121,7 @@ public class BreakTimer {
 							Stopwatch stopwatch = entry.getValue();
 							if (stopwatch.elapsed() >= info.interval.toNanos()) {
 								timerState = TimerState.Break;
-								
+
 								// Stop all stopwatches smaller than this interval
 								StopSmallerStopwatches(info.interval);
 
