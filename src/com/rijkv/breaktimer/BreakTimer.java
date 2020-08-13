@@ -18,20 +18,25 @@ enum TimerState {
 }
 
 public class BreakTimer {
-	
+
+	private final boolean isDebuging;
+
 	private TimerState timerState;
 	private HashMap<BreakInfo, Stopwatch> breaks = new HashMap<>();
 
 	private MouseListener mouseListener;
 	private KeyListener keyListener;
 	private Stopwatch activityStopwatch = new Stopwatch();
+	private long previousTime;
 
 	private Stopwatch breakStopwatch = new Stopwatch();
 	private Duration breakDuration;
 	private String breakEndSoundPath;
 	private BreakWindow breakWindow = new BreakWindow();
 
-	public BreakTimer() {
+	public BreakTimer(boolean debug) {
+		isDebuging = debug;
+
 		// Load config
 		var breaksList = FileManager.getBreakConfig();
 		// Sort by interval
@@ -68,12 +73,39 @@ public class BreakTimer {
 	private void loop() {
 		StartBreakStopwatches();
 		activityStopwatch.start();
-
-		System.out.println("The break-timers have been started!");
+		previousTime = System.nanoTime();
+		if (isDebuging)
+			System.out.println("The break-timers have been started!");
 
 		final Timer time = new Timer();
+		final long timerPeroid = 100; // Execute every 100 miliseconds = 10 times per second
 		time.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
+				long timeDiff = (System.nanoTime() - previousTime) / 1000000;
+				if (timeDiff > timerPeroid * 2) {
+					if (isDebuging)
+						System.out.println("The delay between updates is higher than it sould be! It was " + timeDiff
+								+ "ms while it should be " + timerPeroid + "ms!");
+
+					for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
+						BreakInfo info = entry.getKey();
+						Stopwatch stopwatch = entry.getValue();
+						if (timeDiff >= info.duration.toMillis()) {
+							if (isDebuging)
+								System.out.println("Reset: " + info.name + " - break duration: "
+										+ info.duration.toMillis() + "ms");
+							stopwatch.stop();
+							stopwatch.start();
+						} else {
+							if (isDebuging)
+								System.out.println("Did not reset: " + info.name + " - break duration: "
+										+ info.duration.toMillis() + "ms");
+						}
+					}
+				}
+
+				previousTime = System.nanoTime();
+
 				if (keyListener.isKeyboardUsed() || mouseListener.isMouseUsed()) {
 					activityStopwatch.stop();
 					activityStopwatch.start();
@@ -150,7 +182,7 @@ public class BreakTimer {
 				}
 
 			}
-		}, 0, 100); // Update every second
+		}, 0, timerPeroid);
 	}
 
 	public static String formatDuration(Duration duration) {
