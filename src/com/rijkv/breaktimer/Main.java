@@ -14,7 +14,10 @@ public class Main {
 		logger.setLevel(Level.OFF);
 		
 		// Start program class
-		new BreakTimer(args[0].equalsIgnoreCase("debug"));
+		if (args.length > 0)
+			new BreakTimer(args[0].equalsIgnoreCase("debug"));
+		else
+			new BreakTimer(false);
 	}
 
 }
