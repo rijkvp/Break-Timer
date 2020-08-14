@@ -130,25 +130,34 @@ public class BreakTimer {
 								}
 							}
 						}
-						// TODO: CALCULATE THE NEXT BREAK ONLY CHECK & PLAY REMINDERS FOR THAT ONE!!
 						// Check for reminders & play them
+						boolean reminderPlayed = false;
 						for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
 							BreakInfo info = entry.getKey();
 							Stopwatch stopwatch = entry.getValue();
 							Duration elapsedTime = Duration.ofNanos(stopwatch.elapsed());
 							Duration durationLeft = info.interval.minus(elapsedTime);
-
+							if (reminderPlayed)
+								break;
 							for (var reminder : info.reminders) {
 								if (reminder.isPlayed)
 									continue;
-								if (durationLeft.toMillis() <= reminder.timeBefore.toMillis()) {
+								if (reminder.timeBefore.toMillis() < info.interval.toMillis()
+										&& durationLeft.toMillis() <= reminder.timeBefore.toMillis()) {
+									if (isDebuging) {
+										System.out.println("PLAY " + reminder.soundPath + " FROM " + info.name);
+									}
 									FileManager.playSound(reminder.soundPath);
 									reminder.isPlayed = true;
+									reminderPlayed = true;
 								}
 							}
 						}
 						// Check for breaks
+						boolean breakStarted = false;
 						for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
+							if (breakStarted)
+								break;
 							BreakInfo info = entry.getKey();
 							Stopwatch stopwatch = entry.getValue();
 							if (stopwatch.elapsed() >= info.interval.toNanos()) {
@@ -161,6 +170,11 @@ public class BreakTimer {
 								breakEndSoundPath = info.endSoundPath;
 								breakDuration = info.duration;
 								breakWindow.open(info);
+								breakStarted = true;
+
+								if (isDebuging) {
+									System.out.println("START BREAK " + info.name);
+								}
 							}
 						}
 						break;
