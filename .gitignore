@@ -21,8 +21,8 @@
 hs_err_pid*
 /bin/
 
-# Export
-export/
+# Export assets
+export/assets
 
 # Ignore IDE's
 .project
