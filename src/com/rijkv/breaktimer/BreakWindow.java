@@ -20,9 +20,14 @@ public class BreakWindow implements Runnable {
 
     private volatile boolean isOpened = false;
 
-    private final boolean FORCE_MODE = false;
+    public static final String OS = System.getProperty("os.name").toLowerCase();
+
+    private final boolean FORCE_MODE = true;
+    private final boolean RUNNING_WINDOWS;
 
     public BreakWindow() {
+        RUNNING_WINDOWS = OS.contains("win");
+
         contentPanel = new ImagePanel(FileManager.getBreakBackgroundImage());
 
         BoxLayout layout = new BoxLayout(contentPanel, BoxLayout.Y_AXIS);
@@ -88,7 +93,7 @@ public class BreakWindow implements Runnable {
     // Runnable / Force mode
 
     public void run() {
-        if (FORCE_MODE) {
+        if (FORCE_MODE && RUNNING_WINDOWS) {
             try {
                 kill("explorer.exe"); // Kill explorer
 

@@ -130,51 +130,53 @@ public class BreakTimer {
 								}
 							}
 						}
-						// Check for reminders & play them
-						boolean reminderPlayed = false;
+						BreakInfo nextBreakInfo = null;
+						Stopwatch nextStopwatch = null;
+						Duration nextDurationLeft = Duration.ofMillis(Long.MAX_VALUE);
 						for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
 							BreakInfo info = entry.getKey();
 							Stopwatch stopwatch = entry.getValue();
 							Duration elapsedTime = Duration.ofNanos(stopwatch.elapsed());
 							Duration durationLeft = info.interval.minus(elapsedTime);
-							if (reminderPlayed)
-								break;
-							for (var reminder : info.reminders) {
-								if (reminder.isPlayed)
-									continue;
-								if (reminder.timeBefore.toMillis() < info.interval.toMillis()
-										&& durationLeft.toMillis() <= reminder.timeBefore.toMillis()) {
-									if (isDebuging) {
-										System.out.println("PLAY " + reminder.soundPath + " FROM " + info.name);
-									}
-									FileManager.playSound(reminder.soundPath);
-									reminder.isPlayed = true;
-									reminderPlayed = true;
+							if (durationLeft.toMillis() < nextDurationLeft.toMillis()) {
+								nextBreakInfo = info;
+								nextStopwatch = stopwatch;
+								nextDurationLeft = durationLeft;
+							}
+						}
+						if (nextBreakInfo == null)
+						{
+							if (isDebuging)
+								System.out.println("Couldn't find the next break!");
+							return;
+						}
+						// Check for reminders & play them
+						for (var reminder : nextBreakInfo.reminders) {
+							if (reminder.isPlayed)
+								continue;
+							if (reminder.timeBefore.toMillis() < nextBreakInfo.interval.toMillis()
+									&& nextDurationLeft.toMillis() <= reminder.timeBefore.toMillis()) {
+								if (isDebuging) {
+									System.out.println("PLAY " + reminder.soundPath + " FROM " + nextBreakInfo.name);
 								}
+								FileManager.playSound(reminder.soundPath);
+								reminder.isPlayed = true;
 							}
 						}
 						// Check for breaks
-						boolean breakStarted = false;
-						for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
-							if (breakStarted)
-								break;
-							BreakInfo info = entry.getKey();
-							Stopwatch stopwatch = entry.getValue();
-							if (stopwatch.elapsed() >= info.interval.toNanos()) {
-								timerState = TimerState.Break;
+						if (nextStopwatch.elapsed() >= nextBreakInfo.interval.toNanos()) {
+							timerState = TimerState.Break;
 
-								// Stop all stopwatches smaller than this interval
-								StopSmallerStopwatches(info.interval);
+							// Stop all stopwatches smaller than this interval
+							StopSmallerStopwatches(nextBreakInfo.interval);
 
-								breakStopwatch.start();
-								breakEndSoundPath = info.endSoundPath;
-								breakDuration = info.duration;
-								breakWindow.open(info);
-								breakStarted = true;
+							breakStopwatch.start();
+							breakEndSoundPath = nextBreakInfo.endSoundPath;
+							breakDuration = nextBreakInfo.duration;
+							breakWindow.open(nextBreakInfo);
 
-								if (isDebuging) {
-									System.out.println("START BREAK " + info.name);
-								}
+							if (isDebuging) {
+								System.out.println("START BREAK " + nextBreakInfo.name);
 							}
 						}
 						break;
