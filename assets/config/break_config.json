@@ -20,7 +20,7 @@
     {
         "name": "Take a BIG BREAK!",
         "description": "Take a BIG break please!",
-        "interval": "PT30M",
+        "interval": "PT120M",
         "duration": "PT8M",
         "startSoundPath": "break-start.wav",
         "endSoundPath": "break-end.wav",

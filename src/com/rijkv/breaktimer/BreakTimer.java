@@ -168,7 +168,7 @@ public class BreakTimer {
 							timerState = TimerState.Break;
 
 							// Stop all stopwatches smaller than this interval
-							StopSmallerStopwatches(nextBreakInfo.interval);
+							ResetCountdowns(nextBreakInfo.interval);
 
 							breakStopwatch.start();
 							breakEndSoundPath = nextBreakInfo.endSoundPath;
@@ -220,7 +220,7 @@ public class BreakTimer {
 		}
 	}
 
-	private void StopSmallerStopwatches(Duration interval) {
+	private void ResetCountdowns(Duration interval) {
 		for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
 			BreakInfo info = entry.getKey();
 			Stopwatch stopwatch = entry.getValue();
