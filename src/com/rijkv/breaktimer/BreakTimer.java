@@ -1,8 +1,12 @@
 package com.rijkv.breaktimer;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CompletableFuture;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +38,16 @@ public class BreakTimer {
 	private String breakEndSoundPath;
 	private BreakWindow breakWindow = new BreakWindow();
 
+	private boolean previousPassiveMode = false;
+	private boolean passiveMode = false;
+
+	public static final String OS = System.getProperty("os.name").toLowerCase();
+	public static boolean RUNNING_WINDOWS;
+
 	public BreakTimer(boolean debug) {
 		isDebuging = debug;
+
+		RUNNING_WINDOWS = OS.contains("win");
 
 		// Load config
 		var breaksList = FileManager.getBreakConfig();
@@ -71,7 +83,7 @@ public class BreakTimer {
 	}
 
 	private void loop() {
-		StartBreakStopwatches();
+		startBreakStopwatches();
 		activityStopwatch.start();
 		previousTime = System.nanoTime();
 		if (isDebuging)
@@ -79,6 +91,17 @@ public class BreakTimer {
 
 		final Timer time = new Timer();
 		final long timerPeroid = 100; // Execute every 100 miliseconds = 10 times per second
+
+		// Run in a seperate thread because checking processes takes about 300ms
+		time.scheduleAtFixedRate(new TimerTask() {
+			public void run() {
+				CompletableFuture.runAsync(() -> { // Run acync because checking processes takes a while
+					passiveMode = checkPassiveMode();
+				});
+			};
+		}, 0, 500);
+
+		// The main timer thread
 		time.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
 				long timeDiff = (System.nanoTime() - previousTime) / 1000000;
@@ -144,12 +167,22 @@ public class BreakTimer {
 								nextDurationLeft = durationLeft;
 							}
 						}
-						if (nextBreakInfo == null)
-						{
+						if (nextBreakInfo == null) {
 							if (isDebuging)
 								System.out.println("Couldn't find the next break!");
 							return;
 						}
+						// Passive mode
+						if (passiveMode && !previousPassiveMode) {
+							// Passive mode enabled
+							FileManager.playSound("enable_passive.wav");
+						}
+						if (!passiveMode && previousPassiveMode) {
+							// Passive mode disabled
+							FileManager.playSound("disable_passive.wav");
+						}
+						previousPassiveMode = passiveMode;
+						
 						// Check for reminders & play them
 						for (var reminder : nextBreakInfo.reminders) {
 							if (reminder.isPlayed)
@@ -168,7 +201,7 @@ public class BreakTimer {
 							timerState = TimerState.Break;
 
 							// Stop all stopwatches smaller than this interval
-							ResetCountdowns(nextBreakInfo.interval);
+							resetCountdowns(nextBreakInfo.interval);
 
 							breakStopwatch.start();
 							breakEndSoundPath = nextBreakInfo.endSoundPath;
@@ -184,14 +217,14 @@ public class BreakTimer {
 						Duration elapsedTime = Duration.ofNanos(breakStopwatch.elapsed());
 						Duration durationLeft = breakDuration.minus(elapsedTime);
 						durationLeft = durationLeft.plusMillis(800);
-						breakWindow.UpdateTimeText(formatDuration(durationLeft));
+						breakWindow.updateTimeText(formatDuration(durationLeft));
 						// Check if the break is over
 						if (breakStopwatch.elapsed() >= breakDuration.toNanos()) {
 							timerState = TimerState.CountingDown;
 							breakStopwatch.stop();
 							if (breakEndSoundPath != null)
 								FileManager.playSound(breakEndSoundPath);
-							StartBreakStopwatches();
+							startBreakStopwatches();
 							breakWindow.close();
 						}
 						break;
@@ -208,7 +241,7 @@ public class BreakTimer {
 		return formatted;
 	}
 
-	private void StartBreakStopwatches() {
+	private void startBreakStopwatches() {
 		// Start the stopwatches
 		for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
 			Stopwatch stopwatch = entry.getValue();
@@ -220,16 +253,56 @@ public class BreakTimer {
 		}
 	}
 
-	private void ResetCountdowns(Duration interval) {
+	private void resetCountdowns(Duration interval) {
 		for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
 			BreakInfo info = entry.getKey();
 			Stopwatch stopwatch = entry.getValue();
 			if (info.interval.toSeconds() <= interval.toSeconds()) {
 				stopwatch.stop();
-				info.resetReminders(); // TODO: Bad function name
+				info.resetReminders();
 			} else {
 				stopwatch.pause();
 			}
 		}
+	}
+
+
+	boolean checkPassiveMode() {
+		if (!RUNNING_WINDOWS) // Only works on windows
+			return false;
+
+		String line;
+		String pidInfo = "";
+
+		Process p = null;
+		try {
+			p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+		try {
+			while ((line = input.readLine()) != null) {
+				pidInfo += line;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			input.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		boolean foundProcess = false;
+		for (var process : FileManager.getPassiveProcesses()) {
+			if (pidInfo.contains(process)) {
+				foundProcess = true;
+			}
+		}
+		return foundProcess;
 	}
 }

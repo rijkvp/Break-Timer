@@ -20,13 +20,10 @@ public class BreakWindow implements Runnable {
 
     private volatile boolean isOpened = false;
 
-    public static final String OS = System.getProperty("os.name").toLowerCase();
 
-    private final boolean FORCE_MODE = true;
-    private final boolean RUNNING_WINDOWS;
+    private final boolean FORCE_MODE_ENABLED = true;
 
     public BreakWindow() {
-        RUNNING_WINDOWS = OS.contains("win");
 
         contentPanel = new ImagePanel(FileManager.getBreakBackgroundImage());
 
@@ -56,7 +53,7 @@ public class BreakWindow implements Runnable {
         breakFrame.add(contentPanel);
 
         // Always on top
-        if (FORCE_MODE) {
+        if (FORCE_MODE_ENABLED) {
             breakFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             int state = breakFrame.getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL;
             breakFrame.setExtendedState(state);
@@ -69,7 +66,7 @@ public class BreakWindow implements Runnable {
         breakFrame.setUndecorated(true);
     }
 
-    public void UpdateTimeText(String timeText) {
+    public void updateTimeText(String timeText) {
         timeLabel.setText(timeText);
     }
 
@@ -93,7 +90,7 @@ public class BreakWindow implements Runnable {
     // Runnable / Force mode
 
     public void run() {
-        if (FORCE_MODE && RUNNING_WINDOWS) {
+        if (FORCE_MODE_ENABLED && BreakTimer.RUNNING_WINDOWS) {
             try {
                 kill("explorer.exe"); // Kill explorer
 
