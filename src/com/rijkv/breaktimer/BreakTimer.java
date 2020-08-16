@@ -153,6 +153,41 @@ public class BreakTimer {
 								}
 							}
 						}
+						// Pause or resume
+						for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
+							BreakInfo info = entry.getKey();
+							Stopwatch stopwatch = entry.getValue();
+							if (!passiveMode) {
+								if (info.executionMode == ExecutionMode.Normal
+										|| info.executionMode == ExecutionMode.Always) {
+									// Resume
+									if (stopwatch.isPaused()) {
+										stopwatch.resume();
+									}
+								} else {
+									// Pause
+									if (!stopwatch.isPaused()) {
+										stopwatch.pause();
+									}
+								}
+							} else {
+								if (info.executionMode == ExecutionMode.Passive
+										|| info.executionMode == ExecutionMode.Always) {
+									// Resume
+									if (stopwatch.isPaused()) {
+										stopwatch.resume();
+									}
+								} else {
+									// Pauze
+									if (!stopwatch.isPaused()) {
+										stopwatch.pause();
+									}
+								}
+							}
+
+						}
+
+						// Get the next break
 						BreakInfo nextBreakInfo = null;
 						Stopwatch nextStopwatch = null;
 						Duration nextDurationLeft = Duration.ofMillis(Long.MAX_VALUE);
@@ -161,6 +196,17 @@ public class BreakTimer {
 							Stopwatch stopwatch = entry.getValue();
 							Duration elapsedTime = Duration.ofNanos(stopwatch.elapsed());
 							Duration durationLeft = info.interval.minus(elapsedTime);
+							if (!passiveMode) {
+								if (!(info.executionMode == ExecutionMode.Normal
+										|| info.executionMode == ExecutionMode.Always)) {
+									continue;
+								}
+							} else {
+								if (!(info.executionMode == ExecutionMode.Passive
+										|| info.executionMode == ExecutionMode.Always)) {
+									continue;
+								}
+							}
 							if (durationLeft.toMillis() < nextDurationLeft.toMillis()) {
 								nextBreakInfo = info;
 								nextStopwatch = stopwatch;
@@ -176,13 +222,21 @@ public class BreakTimer {
 						if (passiveMode && !previousPassiveMode) {
 							// Passive mode enabled
 							FileManager.playSound("enable_passive.wav");
+
+							if (isDebuging) {
+								System.out.println("NEXT BREAK: " + nextBreakInfo.name);
+							}
 						}
 						if (!passiveMode && previousPassiveMode) {
 							// Passive mode disabled
 							FileManager.playSound("disable_passive.wav");
+
+							if (isDebuging) {
+								System.out.println("NEXT BREAK: " + nextBreakInfo.name);
+							}
 						}
 						previousPassiveMode = passiveMode;
-						
+
 						// Check for reminders & play them
 						for (var reminder : nextBreakInfo.reminders) {
 							if (reminder.isPlayed)
@@ -265,7 +319,6 @@ public class BreakTimer {
 			}
 		}
 	}
-
 
 	boolean checkPassiveMode() {
 		if (!RUNNING_WINDOWS) // Only works on windows

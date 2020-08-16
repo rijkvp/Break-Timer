@@ -15,7 +15,27 @@
                 "timeBefore": "PT5M",
                 "soundPath": "5min-reminder.wav"
             }
-        ]
+        ],
+        "executionMode": "Normal"
+    },
+    {
+        "name": "Passive Break",
+        "description": "Take a passive break please!",
+        "interval": "PT60M",
+        "duration": "PT1M",
+        "startSoundPath": "break-start.wav",
+        "endSoundPath": "break-end.wav",
+        "reminders": [
+            {
+                "timeBefore": "PT1M",
+                "soundPath": "1min-reminder.wav"
+            },
+            {
+                "timeBefore": "PT5M",
+                "soundPath": "5min-reminder.wav"
+            }
+        ],
+        "executionMode": "Passive"
     },
     {
         "name": "Take a BIG BREAK!",
@@ -33,6 +53,7 @@
                 "timeBefore": "PT5M",
                 "soundPath": "5min-reminder.wav"
             }
-        ]
+        ],
+        "executionMode": "Normal"
     }
 ]

@@ -20,6 +20,12 @@ class Reminder {
 	}
 }
 
+enum ExecutionMode {
+	Normal,
+	Passive,
+	Always,
+}
+
 public class BreakInfo {
 	public String name;
 	public String description;
@@ -28,6 +34,7 @@ public class BreakInfo {
 	public Duration interval;
 	public Duration duration;
 	public ArrayList<Reminder> reminders;
+	public ExecutionMode executionMode = ExecutionMode.Normal;
 
 	public BreakInfo(JSONObject jsonObject) {
 		name = (String) jsonObject.get("name");
@@ -36,6 +43,7 @@ public class BreakInfo {
 		endSoundPath = (String) jsonObject.get("endSoundPath");
 		interval = Duration.parse((CharSequence) jsonObject.get("interval"));
 		duration = Duration.parse((CharSequence) jsonObject.get("duration"));
+		executionMode = ExecutionMode.valueOf((String)jsonObject.get("executionMode"));
 
 		reminders = new ArrayList<>();
 		JSONArray reminderObjects = (JSONArray) jsonObject.get("reminders");
