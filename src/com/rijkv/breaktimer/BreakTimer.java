@@ -90,7 +90,7 @@ public class BreakTimer {
 			System.out.println("The break-timers have been started!");
 
 		final Timer time = new Timer();
-		final long timerPeroid = 100; // Execute every 100 miliseconds = 10 times per second
+		final long timerPeroid = 300; // Execute every 300 miliseconds = 3,3 times per second
 
 		// Run in a seperate thread because checking processes takes about 300ms
 		time.scheduleAtFixedRate(new TimerTask() {
@@ -99,7 +99,7 @@ public class BreakTimer {
 					passiveMode = checkPassiveMode();
 				});
 			};
-		}, 0, 500);
+		}, 0, 800);
 
 		// The main timer thread
 		time.scheduleAtFixedRate(new TimerTask() {
@@ -138,9 +138,16 @@ public class BreakTimer {
 				switch (timerState) {
 					case CountingDown:
 						if (!userIsActive) {
-							// Pause all stopwatches
-							for (var stopwatch : breaks.values()) {
-								if (!stopwatch.isPaused()) {
+							// Pause or reset all stopwatches
+							for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
+								BreakInfo info = entry.getKey();
+								Stopwatch stopwatch = entry.getValue();
+								if (activityStopwatch.elapsed() > info.duration.toNanos()) {
+									if (isDebuging)
+										System.out.println("Reset: " + info.name + "!");
+									stopwatch.stop();
+									stopwatch.start();
+								} else if (!stopwatch.isPaused()) {
 									stopwatch.pause();
 								}
 							}
