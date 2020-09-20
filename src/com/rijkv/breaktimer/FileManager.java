@@ -8,8 +8,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
@@ -41,9 +44,10 @@ public final class FileManager {
 	private static ArrayList<BreakInfo> breakInfos = new ArrayList<BreakInfo>();
 
 	// Resources
-	private static BufferedImage breakBackroundImage;
+	private static ArrayList<BufferedImage> backgrounds = new ArrayList<>();
 	private static Font font;
 	private static Font boldFont;
+	private static Random random = new Random();
 
 	static {
 		// Load Passive procceses .ini file
@@ -68,8 +72,7 @@ public final class FileManager {
 			final JSONArray jsonArray = (JSONArray) obj;
 
 			@SuppressWarnings("unchecked") // Using legacy API
-			final
-			Iterator<JSONObject> iterator = jsonArray.iterator();
+			final Iterator<JSONObject> iterator = jsonArray.iterator();
 
 			while (iterator.hasNext()) {
 				breakInfos.add(new BreakInfo(iterator.next()));
@@ -80,9 +83,17 @@ public final class FileManager {
 
 		// Load resources
 		try {
-			breakBackroundImage = ImageIO.read(new File(ASSETS_FOLDER + "/img/break_background.png"));
-		} catch (final Exception e) {
-			e.printStackTrace();
+			Files.list(Paths.get(ASSETS_FOLDER + "/backgrounds")).filter(Files::isRegularFile).forEach(path -> {
+				BufferedImage bg = null;
+				try {
+					bg = ImageIO.read(path.toFile());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				backgrounds.add(bg);
+			});
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 
 		try {
@@ -114,8 +125,9 @@ public final class FileManager {
 		return breakInfos;
 	}
 
-	public static BufferedImage getBreakBackgroundImage() {
-		return breakBackroundImage;
+	public static BufferedImage getRandomBackground() {
+		int index = random.nextInt(backgrounds.size());
+		return backgrounds.get(index);
 	}
 
 	public static Font getFont() {

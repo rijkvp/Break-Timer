@@ -20,16 +20,15 @@ public class BreakWindow implements Runnable {
 
     private volatile boolean isOpened = false;
 
-
     private final boolean FORCE_MODE_ENABLED = true;
 
     public BreakWindow() {
 
-        contentPanel = new ImagePanel(FileManager.getBreakBackgroundImage());
+        contentPanel = new ImagePanel(FileManager.getRandomBackground());
 
         BoxLayout layout = new BoxLayout(contentPanel, BoxLayout.Y_AXIS);
         contentPanel.setLayout(layout);
-        
+
         titleLabel = new JLabel("TITLE");
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titleLabel.setForeground(FileManager.getTextColor());
@@ -38,7 +37,7 @@ public class BreakWindow implements Runnable {
 
         timeLabel = new JLabel("TIME");
         timeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         timeLabel.setForeground(FileManager.getTextColor());
         timeLabel.setFont(FileManager.getBoldFont(40f));
         contentPanel.add(timeLabel);
@@ -73,6 +72,7 @@ public class BreakWindow implements Runnable {
     public void open(BreakInfo breakInfo) {
         titleLabel.setText(breakInfo.name);
         descriptionLabel.setText(breakInfo.description);
+        contentPanel.updateImage(FileManager.getRandomBackground());
 
         breakFrame.setVisible(true);
         isOpened = true;
