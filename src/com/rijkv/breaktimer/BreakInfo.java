@@ -33,6 +33,8 @@ public class BreakInfo {
 	public String endSoundPath;
 	public Duration interval;
 	public Duration duration;
+	public boolean resetOnSleep;
+	public boolean resetWhenInactive;
 	public ArrayList<Reminder> reminders;
 	public ExecutionMode executionMode = ExecutionMode.Normal;
 
@@ -44,6 +46,8 @@ public class BreakInfo {
 		interval = Duration.parse((CharSequence) jsonObject.get("interval"));
 		duration = Duration.parse((CharSequence) jsonObject.get("duration"));
 		executionMode = ExecutionMode.valueOf((String)jsonObject.get("executionMode"));
+		resetOnSleep = (boolean)jsonObject.get("resetOnSleep");
+		resetWhenInactive = (boolean)jsonObject.get("resetWhenInactive");
 
 		reminders = new ArrayList<>();
 		JSONArray reminderObjects = (JSONArray) jsonObject.get("reminders");

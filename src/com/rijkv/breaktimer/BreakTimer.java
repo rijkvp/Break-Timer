@@ -113,6 +113,8 @@ public class BreakTimer {
 					for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
 						BreakInfo info = entry.getKey();
 						Stopwatch stopwatch = entry.getValue();
+						if (!info.resetOnSleep)
+							continue;
 						if (timeDiff >= info.duration.toMillis()) {
 							if (isDebuging)
 								System.out.println("Reset: " + info.name + " - break duration: "
@@ -142,6 +144,8 @@ public class BreakTimer {
 							for (Map.Entry<BreakInfo, Stopwatch> entry : breaks.entrySet()) {
 								BreakInfo info = entry.getKey();
 								Stopwatch stopwatch = entry.getValue();
+								if (!info.resetWhenInactive)
+									continue;
 								if (activityStopwatch.elapsed() > info.duration.toNanos()) {
 									if (isDebuging)
 										System.out.println("Reset: " + info.name + "!");
