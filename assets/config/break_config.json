@@ -16,7 +16,9 @@
                 "soundPath": "5min-reminder.wav"
             }
         ],
-        "executionMode": "Normal"
+        "executionMode": "Normal",
+	"resetWhenInactive": false,
+	"resetOnSleep": false
     },
     {
         "name": "Passive Break",
@@ -35,7 +37,9 @@
                 "soundPath": "5min-reminder.wav"
             }
         ],
-        "executionMode": "Passive"
+        "executionMode": "Passive",
+	"resetWhenInactive": false,
+	"resetOnSleep": false
     },
     {
         "name": "Take a BIG BREAK!",
@@ -54,6 +58,8 @@
                 "soundPath": "5min-reminder.wav"
             }
         ],
-        "executionMode": "Normal"
+        "executionMode": "Normal",
+	"resetWhenInactive": false,
+	"resetOnSleep": false
     }
 ]
